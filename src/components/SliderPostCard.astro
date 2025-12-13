@@ -1,0 +1,97 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import Button from "@components/Button.astro";
+import type { SliderPostCardProps } from "@src-types/types";
+import { slugify, resolveImagePath } from "@utils/utils";
+import { Image } from "astro:assets";
+
+const t = Astro.props.t;
+const globalSettings = Astro.props.globalSettings;
+
+const {
+    content_position = "Bottom Left",
+    content_length = "Narrow",
+    button_style = globalSettings.button_style_on_background_media,
+    index,
+    total_posts,
+    post
+} = Astro.props as SliderPostCardProps;
+
+const tags = (post.data.tags || [])
+  .slice(0, 2)
+  .map(tagName => ({
+    name: tagName,
+    slug: slugify(tagName)
+}));
+
+const processedImage = resolveImagePath(post.data.feature_image);
+---
+
+<div 
+    class="slide background-media"
+    role="group"
+    aria-roledescription="Slide"
+    aria-label=`${index + 1} of ${total_posts}`
+    data-slide-number={index + 1}
+    data-slug={post.id}
+>
+    <div class:list={['wide-container', { 'hero-center': content_position == "Center" }]}>
+        <div class="hero-content">
+            <div class="hero-content-inner">
+                <div class="hero-text-content">
+                    <div class="tags-wrapper slide-ease-in-animation">
+                       {tags.map(tag => (                                           
+                            <a href={`/tags/${tag.slug}`} class="bracket-button">
+                                <div class="medium-text left-bracket">{t.global.bracket}</div>
+                                <div class="bracket-button-text">
+                                    <div class="medium-text main">{tag.name}</div>
+                                    <div class="medium-text absolute">{tag.name}</div>
+                                </div>
+                                <div class="medium-text right-bracket">{t.global.bracket}</div>
+                            </a>
+                        ))}
+                    </div>
+                    <a href={`/blog/${post.id}`} class="heading-1-wrapper slide-ease-in-animation" data-content-length={content_length}>
+                        <h1>{post.data.title}</h1>
+                    </a>
+
+                    <div class="post-summary-wrapper slide-ease-in-animation">
+                        <p class="paragraph overlay">{post.data.excerpt}</p>
+                    </div>
+                </div>
+                
+                <Button t={t} text={t.global.read_story} button_style={button_style} classname="slide-ease-in-animation" url={`/blog/${post.id}`}/>
+            </div>
+        </div>
+    </div>
+
+    <div class="background-image slide-image-animation">
+         {post.data.feature_video ? (
+                <video loop autoplay muted playsinline>
+                    <source src={post.data.feature_video} type="video/mp4" />
+                </video>
+            ) : (
+                <>
+                    {post.data.feature_image ? (                 
+                        <figure class="parallax-image parallax-image-mobile">
+                            <Image 
+                                src={processedImage} 
+                                alt={post.data.title}
+                    inferSize={true}
+                                loading="lazy" 
+                                format="webp"
+                                widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800, 3200, 3600, 4200]}
+                                sizes="100vw"
+                            />
+                        </figure>                       
+                    ) : (
+                        <div class="placeholder flex-center">
+                            <Placeholder/>
+                        </div>               
+                    )}
+                </>
+            )
+        }
+        <div class="dark-overlay"></div>
+    </div>
+</div>

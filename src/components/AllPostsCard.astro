@@ -1,0 +1,76 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import { Image } from "astro:assets";
+import { formatDate, slugify, resolveImagePath } from "@utils/utils";
+
+const {
+    t,
+    globalSettings,
+    post,
+    index
+} = Astro.props;
+
+const formatted_date = formatDate(post.data.pub_date);
+
+const authors = (post.data.authors || []).map(authorName => ({
+  name: authorName,
+  slug: slugify(authorName)
+}));
+
+const processedImage = resolveImagePath(post.data.feature_image);
+---
+
+<div class={`all-posts-item${index === 0 ? ' active' : ''}`}>
+    <div class:list={['all-posts-item-heading', { 'ease-in-animation-no-stagger': globalSettings.use_page_load_animations }]}>
+        <a href={`/blog/${post.id}`} class="big-text all-posts-item-link">
+            {post.data.title}
+        </a>
+    </div>
+
+    <div class="all-posts-item-excerpt">   
+        <div class="all-posts-excerpt-inner{{#match @index 0}}{{#if @custom.use_page_load_animations}} ease-in-animation{{/if}}{{/match}}">                    
+            <p class="paragraph">
+                {post.data.excerpt}
+            </p>
+
+            <div class="card-extra-info card-small-text">
+                <p class="paragraph">
+                    <span>
+                        {t.global.by}
+                        {authors.map((author, index) => {
+                            const isLast = index === authors.length - 1;
+
+                            return (                                                    
+                                <a href={`/authors/${author.slug}`}>{author.name}</a><>{!isLast ? " & " : ","}</>
+                            );
+                        })}
+                    </span>
+                    <span>
+                        {formatted_date}
+                    </span>
+                </p>
+            </div>
+        </div>   
+    </div>
+
+    <div class="all-posts-background-image">
+        {post.data.feature_image ? (                 
+            <figure class="parallax-image">
+                <Image 
+                    src={processedImage} 
+                    alt={post.data.title}
+                    inferSize={true}
+                    loading="lazy" 
+                    format="webp"
+                    widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800, 3200, 3600, 4200]}
+                    sizes="100vw"
+                />
+            </figure>                       
+        ) : (
+            <div class="placeholder flex-center">
+                <Placeholder/>
+            </div>               
+        )}
+        <div class="dark-overlay"></div>
+    </div>
+</div>

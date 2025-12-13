@@ -1,0 +1,61 @@
+---
+import type { ImageGalleryItem, ImageGalleryProps } from "@src-types/types.ts";
+import { getImage } from "@utils/utils.ts";
+import { Image } from "astro:assets";
+
+
+const {
+  image_slugs = [] as ImageGalleryItem[],
+  images_per_row = 3,
+} = Astro.props as ImageGalleryProps;
+
+// Import all images from assets
+const image_globs = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+
+// Helper to group array into rows
+function groupImagesIntoRows<T>(array: T[], perRow: number): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < array.length; i += perRow) {
+    rows.push(array.slice(i, i + perRow));
+  }
+  return rows;
+}
+
+// Collect images with alt text
+const images = image_slugs
+  .map(item => {
+    const src = getImage({ glob: image_globs, folder_name: "", image_name: item.slug });
+    if (!src) return null;
+    return { src, alt: item.alt || "" };
+  })
+  .filter(Boolean);
+
+const groupedImages = groupImagesIntoRows(images, images_per_row);
+---
+
+<figure class="gallery-card width-wide">
+  <div class="gallery-container">
+    {groupedImages.map((row) => (
+      <div class="gallery-row">
+        {row.map((image) => (
+          <div class="gallery-image">
+            <Image
+              src={image!.src}
+              alt={image!.alt}
+              inferSize={true}
+              format="webp"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+</figure>
+
+<script>
+  import { setImageGallery } from "@js/global.js";
+  document.addEventListener('DOMContentLoaded', () => {
+    setImageGallery();
+  });
+</script>

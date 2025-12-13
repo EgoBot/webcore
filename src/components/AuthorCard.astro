@@ -1,0 +1,73 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import type { AuthorCardProps } from "@src-types/types";
+import { Image } from "astro:assets";
+import { getImage } from "@utils/utils.ts";
+import authorSettings from '@config/authors.json.ts';
+
+import "@styles/post-card.css";
+
+// Get author image from assets. Name them the same as author slug.
+const images = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+
+const { name, url, post_count } = Astro.props as AuthorCardProps;
+const t = Astro.props.t;
+
+const profile_image = getImage({glob: images, folder_name: "", image_name: url });
+
+const authorData = authorSettings.find((t) => t.slug === url);
+const bio = authorData?.bio || null;
+const location = authorData?.location || null;
+---
+
+<div class="card">
+    <a href={`/authors/${url}/`} class="card-image-wrapper hover-image-animation" aria-label={name}>
+        {profile_image ? (
+            <figure>
+                <Image
+                    class="card-image-inner"
+                    src={profile_image}
+                    alt={name}
+                    inferSize={true}
+                    loading="lazy"
+                    format="webp"
+                    widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800]}
+                    sizes="(max-width: 479px) 260px, (max-width: 1080px) calc(66vw - 56px), 33vw"
+                />
+            </figure>
+        ) : (
+            <div class="placeholder flex-center">
+                <Placeholder/>
+            </div>
+        )}
+    </a>
+
+    <div class="card-content">
+        <div class="card-top">                                         
+            <div class="bracket-subtitle">
+                <div class="medium-text left-bracket">{t.global.bracket}</div>
+                <div class="bracket-button-text">
+                    <div class="medium-text main">
+                        {post_count === 0 ? t.global.pagination.no_posts : post_count === 1 ? t.global.pagination.one_post : `${post_count} ${t.global.pagination.multiple_posts}`}
+                    </div>
+                </div>
+                <div class="medium-text right-bracket">{t.global.bracket}</div>
+            </div>
+        </div>
+
+        <div class="card-title-and-circle-wrapper">
+            <div class="card-circle"></div>
+            <div class="card-title-wrapper">
+                <a href={`/authors/${url}/`} class="medium-text card-text">
+                    {name}{location && (<>, {location}</>)}
+                </a>
+            </div>
+        </div>
+
+        <div class="card-excerpt">
+            <p class="paragraph three-lines">
+                {bio}
+            </p>
+        </div>
+    </div>
+</div>

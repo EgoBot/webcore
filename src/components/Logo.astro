@@ -1,0 +1,37 @@
+---
+import { getImage } from "@utils/utils.ts";
+import { Image } from "astro:assets";
+
+const logo_glob = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+const logo = getImage({glob: logo_glob, folder_name: "", image_name: "logo" });
+const logo_accent = getImage({glob: logo_glob, folder_name: "", image_name: "logo_accent" });
+
+const { globalSettings, navbar_logo = true } = Astro.props;
+---
+
+<a class={navbar_logo ? "logo-image-wrapper flex-center" : "footer-logo flex-center"} href="/">
+    {logo ? (
+        <Image
+            class={navbar_logo ? "logo-image main" : "footer-logo-image"}
+            src={logo}
+            alt={globalSettings.site_name}
+            inferSize={true}
+            loading="eager"
+        />
+        <>
+            {navbar_logo && logo_accent && (
+                <Image
+                    class="logo-image accent"
+                    src={logo_accent}
+                    alt={globalSettings.site_name}
+                    inferSize={true}
+                    loading="eager"
+                />
+            )}
+        </>
+    ) : (
+        <div class={navbar_logo ? "medium-text navbar-logo-text" : "footer-logo-text"}>
+            {globalSettings.site_name}
+        </div>
+    )}
+</a>

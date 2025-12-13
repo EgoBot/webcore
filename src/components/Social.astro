@@ -1,0 +1,10 @@
+---
+import type { SocialProps } from "@src-types/types";
+
+const { social } = Astro.props as { social: SocialProps };
+const { url, text, icon, is_share_social = false } = social;
+---
+
+<a href={url} class="social" target="_blank" rel="noopener noreferrer" aria-label={text}>
+    <div class="social-inner" set:html={icon}></div>
+</a>

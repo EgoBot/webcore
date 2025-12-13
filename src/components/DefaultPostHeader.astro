@@ -1,0 +1,126 @@
+---
+import PostAuthors from "@components/PostAuthors.astro";
+import { slugify, resolveImagePath } from "@utils/utils";
+import { Image } from "astro:assets";
+import type { DefaultPostHeaderProps } from "@src-types/types";
+
+import "@styles/secondary-hero.css";
+
+const t = Astro.props.t;
+const globalSettings = Astro.props.globalSettings;
+
+const {
+    post,
+    minutes_read,
+    post_template = "Right Aligned",
+    post_header = "Wide"
+} = Astro.props as DefaultPostHeaderProps;
+
+const tags = (post.data.tags || [])
+  .slice(0, 2)
+  .map(tagName => ({
+    name: tagName,
+    slug: slugify(tagName)
+}));
+
+const processedImage = resolveImagePath(post.data.feature_image);
+
+const video_glob = import.meta.glob('@assets/*.{mp4,webm,mov}', { eager: true });
+
+const feature_video_filename = post.data.feature_video
+  ? post.data.feature_video.split('/').pop()!
+  : null;
+
+const feature_video_item = feature_video_filename
+  ? Object.entries(video_glob).find(([key, _]) =>
+      key.endsWith(feature_video_filename)
+    )
+  : null;
+
+const feature_video = feature_video_item ? (feature_video_item[1] as any).default : null;
+
+const feature_media = post.data.feature_image || feature_video;
+
+let desktopSizes = "calc(100vw - 52px)";
+if(post_header == "Narrow" || post_header == "Narrow Centered"){
+  desktopSizes = "calc(56vw + 52px)"
+}
+---
+
+<section class="secondary-hero">
+    <div
+        class={`secondary-hero-inner ${
+            post_header === "Wide" ||
+            post_header === "Wide Centered"
+            ? "wide-container"
+            : post_template !== "Right Aligned"
+                ? "narrow-container"
+                : "wide-container"
+        } ${
+            !feature_media && post_template !== "Right Aligned" ? "narrow-container" : ""
+        }`}
+        >         
+        <div class="secondary-hero-content">
+            <div class="secondary-heading-wrapper">
+                <div class:list={['tags-wrapper dark', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                    {tags.map(tag => (                                           
+                        <a href={`/tags/${tag.slug}`} class="bracket-button">
+                            <div class="medium-text left-bracket">{t.global.bracket}</div>
+                            <div class="bracket-button-text">
+                                <div class="medium-text main">{tag.name}</div>
+                                <div class="medium-text absolute">{tag.name}</div>
+                            </div>
+                            <div class="medium-text right-bracket">{t.global.bracket}</div>
+                        </a>
+                    ))}
+                </div>
+
+                <h1 class:list={['dark', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                    {post.data.title}
+                </h1>
+            </div>
+
+            <div class:list={['excerpt-and-authors', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                {post.data.excerpt &&
+                    <div class="secondary-paragraph-wrapper">
+                        <p class="paragraph">
+                            {post.data.excerpt}
+                        </p>
+                    </div>
+                }
+
+                <PostAuthors post={post} minutes_read={minutes_read}/>
+            </div>
+
+            
+            {feature_video ? (
+                    <div class:list={['post-main-image-wrapper', { 'ease-in-animation-no-stagger': globalSettings.use_page_load_animations }]}>
+                        <video loop autoplay muted playsinline>
+                            <source src={feature_video} type="video/mp4" />
+                        </video>
+                    </div>
+                ) : (
+                    <>
+                        {post.data.feature_image ? (   
+                            <div class:list={['post-main-image-wrapper', { 'ease-in-animation-no-stagger': globalSettings.use_page_load_animations }]}>             
+                                <figure>
+                                    <Image 
+                                        src={processedImage} 
+                                        alt={post.data.title}
+                                        inferSize={true}
+                                        loading="lazy" 
+                                        format="webp"
+                                        widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800, 3200, 3600, 4200]}
+                                        sizes={`(max-width: 767px) calc(100vw - 36px), (max-width: 1080px) calc(100vw - 52px), ${desktopSizes}`}
+                                    />
+                                </figure>  
+                            </div>                      
+                        ) : (
+                            <div class:list={['hero-border', { 'opacity-animation': globalSettings.use_page_load_animations }]}></div>              
+                        )}
+                    </>
+                )
+            }
+        </div>         
+    </div>
+</section>

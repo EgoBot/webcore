@@ -1,0 +1,18 @@
+---
+import type { CalloutProps } from "@src-types/types.ts";
+
+const {
+    text,
+    text_color = "var(--text-color)",
+    background_color = "var(--background-color)",
+    emoji = "💡" // https://gist.github.com/rxaviers/7360908
+} = Astro.props as CalloutProps;
+
+---
+
+<div class="callout-card" style={background_color ? `background-color:${background_color};` : undefined}>
+    <div class="callout-emoji">{emoji}</div>
+    <div class="callout-text" style={text_color ? `color:${text_color};` : undefined}>
+        {text}
+    </div>
+</div>

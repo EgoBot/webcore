@@ -1,0 +1,43 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import type { PostCardProps } from "@src-types/types";
+import { Image } from "astro:assets";
+import { resolveImagePath } from "@utils/utils";
+
+import "@styles/creative-post-card.css";
+
+const { post } = Astro.props as PostCardProps;
+const processedImage = resolveImagePath(post.data.feature_image);
+---
+
+<div class="creative-post-card flex-center">
+    <a href={`/blog/${post.id}`} class="creative-post-card-link">
+        <div class="heading-1 creative-post-card-title dark">
+            {post.data.title}
+        </div>
+    </a>
+
+    <div class="creative-post-card-image-container">
+        <a href={`/blog/${post.id}`} class="creative-post-card-image-wrapper flex-center" aria-label={post.data.title}>
+            {processedImage ? (
+                <figure>
+                    <Image
+                        class="card-image-inner"
+                        src={processedImage}
+                        alt={post.data.title}
+                        inferSize={true}
+                        loading="lazy"
+                        format="webp"
+                        widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800]}
+                        sizes="(max-width: 767px) 170px, (max-width: 1080px) 24vw, 14vw"
+                    />
+                </figure>
+            ) : (
+                <div class="placeholder flex-center">
+                    <Placeholder/>
+                </div>
+            )}
+            <div class="creative-post-card-overlay"></div>
+        </a>
+    </div>
+</div>

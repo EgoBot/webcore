@@ -1,0 +1,15 @@
+---
+import type { MediaEmbedProps } from '@src-types/types.ts';
+
+const { media_iframe_src, title = "Embedded media" } = Astro.props as MediaEmbedProps;
+---
+
+<div class="embed-card">
+    <iframe 
+    src={media_iframe_src}
+    title={title}
+    frameborder="0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    allowfullscreen
+  ></iframe>
+</div>

@@ -1,0 +1,56 @@
+---
+import { formatDate, slugify } from "@utils/utils";
+import PostAuthor from "@components/PostAuthor.astro";
+import type { PostAuthorsProps } from "@src-types/types";
+
+import "@styles/post-authors.css";
+
+const {
+    post,
+    minutes_read
+} = Astro.props as PostAuthorsProps;
+---
+
+{post.data.authors &&    
+    <div class="post-authors">
+        <div class="post-author-images">  
+            {
+                post.data.authors.map((name) => 
+                    <PostAuthor name={name}/> 
+                )
+            } 
+        </div>
+
+        <div class="post-authors-text">
+            <div class="post-authors-inner" id="authors">
+                <small class="post-author-name">
+                    {
+                        post.data.authors.map((name, index) => 
+                            <a href={`/authors/${slugify(name)}/`}>
+                                {name}
+                            </a>
+                            <>
+                                {index < post.data.authors.length - 1 &&
+                                    <span> & </span>
+                                }
+                            </>
+                        )
+                    } 
+                </small>
+            </div>
+            <small class="date-small-text italic">
+                <span>
+                    <time>
+                        {formatDate(post.data.pub_date)}
+                    </time>
+                </span>
+                {post && 
+                    <>
+                        &nbsp;-&nbsp;
+                        <span>{minutes_read}</span>
+                    </>
+                }
+            </small>
+        </div>  
+    </div>
+} 

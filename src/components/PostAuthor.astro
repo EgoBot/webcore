@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import { getImage, slugify } from "@utils/utils.ts";
+import AvatarIcon from "@assets/icons/AvatarIcon.astro";
+
+import "@styles/post-authors.css"
+
+// Get author image from assets. Name them the same as author slug.
+const images = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+
+const name = Astro.props.name;
+const url = slugify(name)
+
+const profile_image = getImage({glob: images, folder_name: "", image_name: url });
+---
+    
+<a href={`/authors/${url}/`} class="post-author-image" aria-label={name}>
+    {profile_image ? (
+        <figure>
+            <Image
+                class="image hover-image-opacity"
+                src={profile_image}
+                alt={name}
+                inferSize={true}
+                loading="lazy"
+                width={112}
+                height={112}
+            />
+        </figure>
+    ) : (
+        <div class="author-avatar-wrapper">
+            <AvatarIcon />
+        </div>
+    )}
+</a>

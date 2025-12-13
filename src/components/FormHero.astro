@@ -1,0 +1,62 @@
+---
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import type { FormHeroProps } from "@src-types/types";
+
+const { type, has_link = false, title, description } = Astro.props as FormHeroProps;
+const { t, globalSettings } = Astro.props;
+---
+
+<div class="wide-container form-page-wrapper">
+    <div class="form-page-content">
+        <h1 class:list={['', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+            {title}
+        </h1>
+
+        <div class:list={['form-page-paragraph', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+            <p class="paragraph light">
+                {description}
+            </p>
+        </div>  
+
+        <div class:list={['form-container', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+            <form class="page-form-element">
+                {type === "Signin" ? (
+                    <div class="page-subscribe-wrapper">
+                        <input type="email" required="true" placeholder={t.global.form.email} class="subscribe-input"/>
+                        <button class="unstyled-button arrow-button-circle" type="submit" aria-label="Submit button">
+                            <div class="arrow-button-circle-inner">
+                                <span class="arrow-button-icon main flex-center">
+                                    <SmallArrowIcon />
+                                </span>
+                            </div>
+                        </button>
+                        <div class="page-subscribe-wrapper-overlay"></div>
+                    </div>
+                 )   :   (
+                    <div class="vertical-form">
+                        <div class="input-wrapper">
+                            <input type="text" required="true" placeholder={t.global.form.name}/>
+                            <div class="page-subscribe-wrapper-overlay"></div>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="email" required="true" placeholder={t.global.form.email}/>
+                            <div class="page-subscribe-wrapper-overlay"></div>
+                        </div>
+                        <button class="button" type="submit">{type === "Signup" ? <>{t.signup_page.button_label}</> : <>{t.subscribe_page.button_label}</>}</button>
+                    </div>                                 
+                )}
+
+                {has_link &&
+                    <small class="under-form-text">
+                        <span class="lower-opacity-text">
+                             {type === "Signin" ? <>{t.signin_page.no_account}</> : <>{t.signup_page.has_account}</>}
+                        </span>
+                        <a href={type === "Signin" ? '/signup/' : '/signin/'}>
+                            {type === "Signin" ? <>{t.signin_page.sign_up}</> : <>{t.signup_page.sign_in}</>}
+                        </a>
+                    </small>
+                }
+            </form>
+        </div>
+    </div>
+</div>

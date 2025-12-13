@@ -1,0 +1,21 @@
+---
+import FooterLink from "@components/FooterLink.astro";
+
+import type { FooterDropdown } from "@src-types/types";
+
+const {
+    footer_link,
+    index,
+    is_creative_footer = false
+} = Astro.props;
+---
+
+<div class={is_creative_footer ? (index === 1 ? "footer-links-column right-aligned" : "footer-links-column left-aligned") : "footer-links-group"}>
+    <div class="subtitle light">
+        {footer_link.text}
+    </div>
+    
+    <ul class="footer-secondary-links">
+        {footer_link.dropdown.map((footerLinkInner: FooterDropdown) => <FooterLink footer_link={footerLinkInner} />)}
+    </ul>
+</div>

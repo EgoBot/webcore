@@ -1,0 +1,45 @@
+---
+import type { CircleContent } from "@src-types/types";
+import { getImage } from "@utils/utils";
+import { Image } from "astro:assets";
+
+const {
+    title,
+    text,
+    image_slug
+} = Astro.props as CircleContent;
+
+// Get circle image from assets. Name them the same as image_slug.
+const images = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+const circle_image = getImage({glob: images, folder_name: "", image_name: image_slug });
+---
+
+<div class="circle-pair">
+    {circle_image && (
+        <div class="circle-element">
+            <figure>
+                <Image
+                    src={circle_image}
+                    alt={title}
+                    inferSize={true}
+                    loading="lazy"
+                    format="webp"
+                    widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800]}
+                    sizes="(max-width: 767px) 380px, (max-width: 1080px) 340px, 24vw"
+                />
+            </figure>
+        </div>
+    )}
+
+    <div class="circle-element content">
+        <div class="medium-text card-text">
+            {title}
+        </div>
+
+        <i>
+            <p class="paragraph smaller five-lines">
+                {text}
+            </p>
+        </i>
+    </div>
+</div>

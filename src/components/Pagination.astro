@@ -1,0 +1,25 @@
+---
+import type { PaginationProps } from "@src-types/types.ts";
+
+const { t } = Astro.props;
+
+const {
+	posts_per_page,
+    total_posts,
+    url = "/blog/",
+    is_archivepage = false,
+    text = t.global.pagination.load_more
+} = Astro.props as PaginationProps;
+
+const number_of_pages = Math.ceil(total_posts / posts_per_page);
+---
+
+<custom-pagination id="custom-pagination" data-current-page="1" data-last-page={number_of_pages} data-url={url} data-is-archivepage={is_archivepage} data-total-posts={total_posts}>
+    <nav class="pagination-nav flex-center">
+        { posts_per_page < total_posts &&
+            <button class="pagination-button button">
+                {text}
+            </button>
+        }
+    </nav>
+</custom-pagination> 

@@ -1,0 +1,33 @@
+---
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import Social from "@components/Social.astro";
+import socialsSettings from "@config/socials.json.ts";
+
+const { t, globalSettings } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<div class="footer-bottom">
+    <div class="socials">
+        {
+            socialsSettings.map((social) =>
+                <Social social={social} />
+            )
+        }
+    </div>
+
+    <div class="copyright-text-wrapper">
+        <div class="copyright-border"></div>
+        <p class="paragraph light">
+            &copy;&nbsp;{currentYear}&nbsp;<a class="hover-underline" href="/">{globalSettings.site_name}</a>&nbsp;-&nbsp;{t.global.footer.credits}
+        </p>
+    </div>
+
+    <div class="return-button-wrapper">
+        <button class="unstyled-button social return-button" aria-label="Return to top">
+            <div class="social-inner">
+                <SmallArrowIcon />
+            </div>
+        </button>
+    </div>
+</div>

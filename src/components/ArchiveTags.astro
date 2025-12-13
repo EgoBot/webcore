@@ -1,0 +1,31 @@
+---
+import { getTags, getUniqueTagsWithCount } from "@utils/utils.ts";
+
+const tags = await getTags();
+const unique_tags = getUniqueTagsWithCount(tags)
+
+const { globalSettings, t, total_posts } = Astro.props;
+---
+
+<div class:list={['archive-tags-outer', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+    <div class="tags-gradient tags-gradient-before"></div>
+    <archive-tags data-current-tag="all-tags">
+        <div class="button archive-tag-button">
+            <input id="all-tags" type="radio" name="archive-tags" data-number={total_posts === 0 ? t.global.pagination.no_posts : total_posts === 1 ? t.global.pagination.one_post : `${total_posts} ${t.global.pagination.multiple_posts}`} checked/>
+            <label class="radio-button-text" for="all-tags">
+                {t.archive_page.all_tags} ({total_posts})
+            </label>
+        </div>
+
+        {
+            unique_tags.map((tag) =>
+                <div class="button archive-tag-button">
+                    <input id={tag.slug} type="radio" name="archive-tags" data-number={tag.count === 0 ? t.global.pagination.no_posts : tag.count === 1 ? t.global.pagination.one_post : `${tag.count} ${t.global.pagination.multiple_posts}`}/>
+                    <label class="radio-button-text" for={tag.slug}>
+                        {tag.original} ({tag.count})
+                    </label>
+                </div>     
+            )
+        }     
+    </archive-tags>
+</div>

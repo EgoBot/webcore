@@ -1,0 +1,50 @@
+---
+import navbarSettings from "@config/navbar.json.ts";
+import Logo from "@components/Logo.astro";
+import NavbarLink from "@components/NavbarLink.astro";
+import NavbarDropdown from "@components/NavbarDropdown.astro";
+
+import "@styles/navbar.css";
+
+const { globalSettings, t } = Astro.props;
+---
+
+<custom-header class:list={['navbar-outer', { 'opacity-animation': globalSettings.use_page_load_animations }]}>
+    <div class="navbar">
+      <div class="wide-container">
+        <div class="navbar-inner">
+          <Logo globalSettings={globalSettings}/>
+
+          <button class="unstyled-button menu-button" aria-label="Menu button">
+            <div class="menu-line first-line"></div>
+            <div class="menu-line mobile-line"></div>
+            <div class="menu-line second-line"></div>
+          </button>
+
+          <div class="navbar-links-outer">
+            <div class="navbar-links-inner">
+              <ul class="nav">
+                    {
+                        navbarSettings.map((navbarLink) =>
+                            "dropdown" in navbarLink ? (
+                                <NavbarDropdown navbarLink={navbarLink} />
+                            ) : (
+                                <NavbarLink navbarLink={navbarLink}/>
+                            )
+                        )
+                    }
+              </ul>
+
+              <ul class="cta-navbar-links">
+                <li>
+                    <a href="/subscribe/" class="nav-link medium-text smaller last">
+                        {t.global.navbar.subscribe}                           
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</custom-header>

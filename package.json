@@ -1,13 +1,14 @@
 {
   "name": "@egobot/webcore",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Shared components and utilities for Odyssey Web sites",
   "exports": {
     "./components/*": "./src/components/*.astro",
     "./layouts/*": "./src/layouts/*.astro",
     "./utils/*": "./src/utils/*",
-    "./styles/*": "./src/styles/*"
+    "./styles/*": "./src/styles/*",
+    "./assets/*": "./src/assets/*"
   },
   "peerDependencies": {
     "astro": "^5.13.7"

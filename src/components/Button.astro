@@ -1,0 +1,45 @@
+---
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import type { ButtonProps } from "@src-types/types.ts";
+
+const t = Astro.props.t;
+
+const {
+    text,
+    url,
+    new_tab,
+    button_style = "Bracket Desktop/Solid Mobile"
+} = Astro.props as ButtonProps;
+
+const classname = Astro.props.classname;
+---
+
+<div class={`hero-button-wrapper ${classname ? classname : ''}`} data-button-type={button_style}>
+    <div class="bracket-and-arrow-button">
+        <div class="bracket-button-wrapper">
+            <a href={url ? `${url}`: 'javascript:'} target={new_tab ? "_blank" : undefined} rel={new_tab ? "noopener noreferrer" : undefined} class="bracket-button">
+                <div class="medium-text left-bracket">{t.global.bracket}</div>
+                <div class="bracket-button-text">
+                    <div class="medium-text main">{text}</div>
+                    <div class="medium-text absolute">{text}</div>
+                </div>
+                <div class="medium-text right-bracket">{t.global.bracket}</div>
+            </a>
+        </div>
+
+        <div class="arrow-button-wrapper">
+            <a href={url ? `${url}`: 'javascript:'} target={new_tab ? "_blank" : undefined} rel={new_tab ? "noopener noreferrer" : undefined} class="arrow-button">
+                <div class="arrow-button-text-wrapper">
+                    <div class="arrow-button-text main">{text}</div>
+                    <div class="arrow-button-text absolute">{text}</div>
+                </div>
+                <div class="arrow-button-circle">
+                    <div class="arrow-button-circle-inner">
+                        <span class="arrow-button-icon main flex-center"><SmallArrowIcon/></span>
+                        <span class="arrow-button-icon absolute flex-center"><SmallArrowIcon/></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

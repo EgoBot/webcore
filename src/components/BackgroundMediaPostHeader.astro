@@ -1,0 +1,126 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import Button from "@components/Button.astro";
+import PostAuthors from "@components/PostAuthors.astro";
+import { slugify, resolveImagePath } from "@utils/utils";
+import { Image } from "astro:assets";
+import type { BackgroundMediaPostHeaderProps } from "@src-types/types";
+
+import "@styles/hero-section.css";
+
+const t = Astro.props.t;
+const globalSettings = Astro.props.globalSettings;
+
+const {
+    content_position = globalSettings.content_position_on_home_hero,
+    content_length = globalSettings.content_length_on_background_media,
+    button_style = globalSettings.button_style_on_background_media,
+    post,
+    is_for_end_page = false,
+    minutes_read
+} = Astro.props as BackgroundMediaPostHeaderProps;
+
+const tags = (post.data.tags || [])
+  .slice(0, 2)
+  .map(tagName => ({
+    name: tagName,
+    slug: slugify(tagName)
+}));
+
+const processedImage = resolveImagePath(post.data.feature_image);
+
+const video_glob = import.meta.glob('@assets/*.{mp4,webm,mov}', { eager: true });
+
+const feature_video_filename = post.data.feature_video
+  ? post.data.feature_video.split('/').pop()!
+  : null;
+
+const feature_video_item = feature_video_filename
+  ? Object.entries(video_glob).find(([key, _]) =>
+      key.endsWith(feature_video_filename)
+    )
+  : null;
+
+const feature_video = feature_video_item ? (feature_video_item[1] as any).default : null;
+---
+<section class:list={['background-media hero-section', { 'hero-center': content_position == "Center" }]}>
+    <div class="wide-container">
+        <div class="hero-content">
+            <div class="hero-content-inner">
+                <div class="hero-text-content">
+                    <div class:list={['tags-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                        {tags.map(tag => (                                           
+                            <a href={`/tags/${tag.slug}`} class="bracket-button">
+                                <div class="medium-text left-bracket">{t.global.bracket}</div>
+                                <div class="bracket-button-text">
+                                    <div class="medium-text main">{tag.name}</div>
+                                    <div class="medium-text absolute">{tag.name}</div>
+                                </div>
+                                <div class="medium-text right-bracket">{t.global.bracket}</div>
+                            </a>
+                        ))}
+                    </div>
+
+                    {is_for_end_page ? (
+                        <div class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
+                            <h1>{post.data.title}</h1>
+                        </div>
+
+                        <div class:list={['excerpt-and-authors', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                            <div class="post-summary-wrapper">
+                                <p class="paragraph overlay">{post.data.excerpt}</p>
+                            </div>
+
+                            <PostAuthors post={post} minutes_read={minutes_read}/>
+                        </div>
+                    ) : (
+                        <a href={`/blog/${post.id}`} class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
+                            <h1>{post.data.title}</h1>
+                        </a>
+
+                        <div class:list={['post-summary-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                            <p class="paragraph overlay">{post.data.excerpt}</p>
+                        </div>
+                    )}
+                </div>
+                
+                {is_for_end_page ? (
+                    <></>
+                ) : (
+                    <div class:list={['', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                        <Button t={t} text={t.global.read_story} button_style={button_style} url={`/blog/${post.id}`}/>
+                    </div>
+                )}
+            </div>
+        </div>
+    </div>
+    <div class:list={['background-image', { 'image-animation': globalSettings.use_page_load_animations }]}>
+        {feature_video ? (
+                <video loop autoplay muted playsinline>
+                    <source src={feature_video} type="video/mp4" />
+                </video>
+            ) : (
+                <>
+                    {post.data.feature_image ? (                 
+                        <figure class="parallax-image">
+                            <Image 
+                                src={processedImage} 
+                                alt={post.data.title}
+                    inferSize={true}
+                                loading="lazy" 
+                                format="webp"
+                                widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800, 3200, 3600, 4200]}
+                                sizes="100vw"
+                            />
+                        </figure>                       
+                    ) : (
+                        <div class="placeholder flex-center">
+                            <Placeholder/>
+                        </div>               
+                    )}
+                </>
+            )
+        }
+        <div class="dark-overlay"></div>
+    </div>
+</section>

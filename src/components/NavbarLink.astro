@@ -1,0 +1,7 @@
+---
+const { navbarLink } = Astro.props;
+---
+
+<li>  
+    <a class="nav-link medium-text smaller"  href={navbarLink.link} target={navbarLink.new_tab ? "_blank" : ""} rel={navbarLink.new_tab ? "noopener noreferrer" : ""}>{navbarLink.text}</a>
+</li>

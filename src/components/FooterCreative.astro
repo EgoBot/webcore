@@ -1,0 +1,93 @@
+---
+import FooterOverlay from "@components/FooterOverlay.astro";
+import footerSettings from "@config/footer.json";
+import FooterLink from "@components/FooterLink.astro";
+import FooterDropdown from "@components/FooterDropdown.astro";
+import BigArrowIcon from "@assets/icons/BigArrowIcon.astro";
+import Placeholder from "@assets/icons/Placeholder.astro";
+import FooterBottom from "@components/FooterBottom.astro";
+import { Image } from "astro:assets";
+import { getSortedPosts, resolveImagePath } from "@utils/utils.js";
+
+import "@styles/footer-creative.css";
+
+const { t, globalSettings } = Astro.props;
+
+const { posts } = await getSortedPosts({limit: 8});
+---
+
+<footer class="footer-wrapper-creative" id="creative-footer">
+    <div class="footer-outer">
+        <custom-footer class="creative-footer" data-is-creative="true">
+            <div class="footer-animation">
+                <FooterOverlay />
+            </div>
+
+            <div class="wide-container">
+                <div class="footer-inner">
+                    <nav class="footer-top">
+                        {
+                            footerSettings.map((footerLink, index) =>
+                                index < 2 ? (
+                                "dropdown" in footerLink ? (
+                                    <FooterDropdown footer_link={footerLink} index={index} is_creative_footer={true}/>
+                                ) : (
+                                    <ul class={`footer-links-column ${index === 1 ? "right-aligned" : "left-aligned"}`}>
+                                        <FooterLink footer_link={footerLink} />
+                                    </ul>
+                                )
+                                ) : null
+                            )
+                        }          
+                    </nav>
+
+                    <div class="footer-slider-wrapper">
+                        <a href="/subscribe/" class="all-posts-link footer-center-link flex-center">
+                            <div class="heading-1 dark creative-post-card-title flex-center">
+                                {t.global.footer.subscribe}
+                            </div>
+                            <div class="arrow-link-button flex-center">
+                                <div class="arrow-link-button-wrapper smaller flex-center">
+                                    <BigArrowIcon />
+                                </div>
+                            </div>
+                        </a>
+
+                        <div class="footer-slider">
+                            {
+                                posts.map((post) => {
+                                    const processedImage = resolveImagePath(post.data.feature_image);
+                                    return (
+                                        <div class="footer-slide">
+                                            {processedImage ? (
+                                                <figure>
+                                                    <Image
+                                                        class="card-image-inner"
+                                                        src={processedImage}
+                                                        alt={post.data.title}
+                                                        inferSize={true}
+                                                        loading="lazy"
+                                                        format="webp"
+                                                        widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800]}
+                                                        sizes="(max-width: 767px) 200px, (max-width: 1080px) 320px, 28vw"
+                                                    />
+                                                </figure>
+                                            ) : (
+                                                <div class="placeholder flex-center">
+                                                    <Placeholder/>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            }
+                            <div class="footer-project-overlay"></div>
+                        </div>
+                    </div>
+                    
+                    <FooterBottom t={t} globalSettings={globalSettings}/>
+                </div>
+            </div>
+        </custom-footer>
+    </div>
+</footer>

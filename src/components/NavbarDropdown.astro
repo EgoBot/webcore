@@ -1,0 +1,20 @@
+---
+import NavbarLink from "@components/NavbarLink.astro";
+
+import type { NavbarDropdown } from "@src-types/types";
+
+const navbarLink = Astro.props.navbarLink;
+---
+
+<li class="links-dropdown">  
+    <div class="links-label medium-text smaller">
+        <span>{navbarLink.text}</span>
+        <div class="navbar-label-circle"></div>
+    </div>
+    <div class="secondary-links">
+        <ul class="secondary-links-inner">
+            <li class="navbar-circle"></li>
+            {navbarLink.dropdown.map((navbarLinkInner: NavbarDropdown) => <NavbarLink navbarLink={navbarLinkInner} />)}
+        </ul>
+    </div>
+</li>

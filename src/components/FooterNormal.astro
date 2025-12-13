@@ -1,0 +1,59 @@
+---
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import Logo from "@components/Logo.astro";
+import FooterBottom from "@components/FooterBottom.astro";
+import footerSettings from "@config/footer.json";
+import FooterLink from "@components/FooterLink.astro";
+import FooterDropdown from "@components/FooterDropdown.astro";
+
+import "@styles/footer-normal.css";
+
+const { t, globalSettings } = Astro.props;
+---
+
+<footer class="footer-wrapper" id="normal-footer">
+    <custom-footer class="footer wide-container" data-is-creative="false">
+        <div class="footer-content">
+            <div class="footer-description">
+                <Logo globalSettings={globalSettings} navbar_logo={false}/>
+
+                <div class="footer-paragraph-wrapper">
+                    <p class="paragraph light">{t.global.footer.footer_text}</p>
+                </div>
+
+                <div class="newsletter-outer">
+                    <form class="subscribe-form">
+                        <div class="subscribe-with-alerts">
+                            <div class="subscribe-wrapper">
+                                <div class="subscribe-inner">
+                                    <input type="email" required="true" placeholder={t.global.footer.form_placeholder} class="subscribe-input"/>
+                                    <button class="unstyled-button submit-button flex-center" type="submit" aria-label="Submit button">
+                                        <div class="submit-button-inner flex-center">
+                                            <SmallArrowIcon />
+                                        </div>
+                                    </button>
+                                </div>                                      
+                            </div>
+                        </div>            
+                    </form>
+                </div>
+            </div>
+
+            <nav class="footer-navigation">
+                {
+                    footerSettings.map((footerLink) =>
+                        "dropdown" in footerLink ? (
+                            <FooterDropdown footer_link={footerLink}/>
+                        ) : (
+                            <ul class="footer-secondary-links">
+                                <FooterLink footer_link={footerLink}/>
+                            </ul>
+                        )
+                    )
+                }           
+            </nav>
+        </div>
+
+        <FooterBottom t={t} globalSettings={globalSettings}/>
+    </custom-footer>
+</footer>

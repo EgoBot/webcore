@@ -1,0 +1,44 @@
+---
+import type { ImageCardProps } from "@src-types/types";
+import { getImage } from "@utils/utils.ts";
+import { Image } from "astro:assets";
+
+const {
+    image_slug,
+    alt,
+    size = "Wide"
+} = Astro.props as ImageCardProps;
+
+let sizes = "";
+let class_name = "width-wide";
+
+if (size === "Wide") {
+  sizes = "(max-width: 767px) calc(100vw - 36px), (max-width: 1080px) calc(100vw - 52px), 73vw";
+} else if (size === "Full Width") {
+  sizes = "100vw";
+  class_name = "width-full";
+} else if (size === "Auto") {
+  sizes = "auto";
+  class_name = "";
+}
+
+// Get image from assets. Name them the same as image_slug.
+const images = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+const image = getImage({glob: images, folder_name: "", image_name: image_slug });
+---
+
+<figure class=`image-card ${class_name}`>
+    {image ? (
+        <Image
+            src={image}
+            alt={alt}
+            inferSize={true}
+            format="webp"
+            widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800, 3200, 3600]}
+            sizes={sizes}
+            loading="lazy"
+        />
+    ) : (
+        <div class="image-placeholder">Image not found: {image_slug}</div>
+    )}
+</figure>

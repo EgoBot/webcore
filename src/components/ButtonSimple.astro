@@ -1,0 +1,17 @@
+---
+import type { ButtonProps } from "@src-types/types.ts";
+
+const {
+    text,
+    url,
+    new_tab
+} = Astro.props as ButtonProps;
+
+const classname = Astro.props.classname;
+---
+
+<div class={`button-wrapper ${classname ? classname : ''}`}>
+    <a href={url ? `${url}`: 'javascript:'} target={new_tab ? "_blank" : undefined} rel={new_tab ? "noopener noreferrer" : undefined} class="button">
+        {text}
+    </a>
+</div>

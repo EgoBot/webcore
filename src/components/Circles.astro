@@ -1,0 +1,64 @@
+---
+
+import type { CirclesProps } from "@src-types/types";
+import CirclePair from "@components/CirclePair.astro";
+import circleSettings from "@config/circles.json";
+
+import "@styles/circles-section.css";
+
+const t = Astro.props.t;
+
+const {
+    heading = t.global.our_readers,
+    circles_content = circleSettings,
+    loop_content = 2
+} = Astro.props as CirclesProps;
+---
+
+<circles-component data-circles-content={circles_content}>
+    <section class="circles-section">
+        <div class="wide-container">
+            {heading && (
+                <div class="big-title-wrapper">
+                    <h2 class="heading-2">
+                        {heading}
+                    </h2>
+                </div>
+            )}
+        </div>
+
+        <div class="circle-scrollers">
+            <div class="infinite-scroll">
+                <div class="infinite-scroll-wrapper">
+                    {[...Array(loop_content)].map((_, i) => (
+                        <div class="infinite-scroll-content">
+                            {circleSettings.map((content) => (
+                            <CirclePair 
+                                title={content.title} 
+                                text={content.text} 
+                                image_slug={content.image_slug} 
+                            />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div class="infinite-scroll reversed">
+                <div class="infinite-scroll-wrapper">
+                    {[...Array(loop_content)].map((_, i) => (
+                        <div class="infinite-scroll-content">
+                            {circleSettings.map((content) => (
+                            <CirclePair 
+                                title={content.title} 
+                                text={content.text} 
+                                image_slug={content.image_slug} 
+                            />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    </section>
+</circles-component>

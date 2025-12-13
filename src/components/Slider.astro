@@ -1,0 +1,81 @@
+---
+import CarretIcon from "@assets/icons/CarretIcon.astro";
+import type { SliderProps } from "@src-types/types";
+
+import "@styles/slider-component.css";
+import SliderPostCard from "@components/SliderPostCard.astro";
+
+const t = Astro.props.t;
+const globalSettings = Astro.props.globalSettings;
+
+const {
+    posts
+} = Astro.props as SliderProps;
+---
+
+<!-- Flickity styles -->
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<link rel="stylesheet" href="https://unpkg.com/flickity-fade@1/flickity-fade.css">
+
+<section class="our-selection-section">
+    <slider-component class="our-selection-slider">
+        <div class="slider-navigation wide-container">
+            <div class="slide-number">
+                <span class="medium-text bigger-font">
+                    0
+                </span>
+                <div class="current-slide-number-inner">
+                    {
+                        posts.map((post, index) =>
+                            <span class="medium-text bigger-font">
+                                {index + 1}
+                            </span>
+                        )
+                    }
+                </div>              
+            </div>
+            <div class="slider-navigation-separator">
+                <div class="medium-text">
+                    /
+                </div>
+            </div>
+            <div class="slider-navigation-total-slides">
+                <div class="medium-text bigger-font">
+                    0{posts.length}
+                </div>
+            </div>
+        </div>
+
+        <button
+            type="button"
+            class="unstyled-button slider-button flex-center"
+            name="previous"
+            aria-label="Previous slide"
+            aria-controls="slider"
+        >
+            <div class="slider-arrow-inner rotated flex-center">
+               <CarretIcon />
+            </div>
+        </button>
+
+        <button
+            type="button"
+            class="unstyled-button slider-button flex-center"
+            name="next"
+            aria-label="Next slide"
+            aria-controls="slider"
+        >
+            <div class="slider-arrow-inner flex-center">
+                <CarretIcon />
+            </div>
+        </button>
+
+        <div class="slider-wrapper">
+            {
+                posts.map((post, index) =>
+                    <SliderPostCard t={t} globalSettings={globalSettings} post={post} index={index} total_posts={posts.length}/>
+                )
+            }
+        </div>
+    </slider-component>
+</section>

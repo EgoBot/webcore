@@ -1,0 +1,112 @@
+---
+import Placeholder from "@assets/icons/Placeholder.astro";
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import type { PostCardProps } from "@src-types/types";
+import { formatDate, slugify, resolveImagePath } from "@utils/utils";
+import { Image } from "astro:assets";
+
+const t = Astro.props.t;
+const { post } = Astro.props as PostCardProps;
+
+const formatted_date = formatDate(post.data.pub_date);
+
+const tags = (post.data.tags || [])
+  .slice(0, 2)
+  .map(tagName => ({
+    name: tagName,
+    slug: slugify(tagName)
+}));
+
+const authors = (post.data.authors || []).map(authorName => ({
+  name: authorName,
+  slug: slugify(authorName)
+}));
+
+const processedImage = resolveImagePath(post.data.feature_image);
+---
+
+<div class="featured-post">
+    <div class="featured-post-inner">
+        <div class="featured-post-top">
+            <div class="horizontal-line"></div>
+
+            <div class="tags-wrapper dark">
+                {tags.map(tag => (                                           
+                    <a href={`/tags/${tag.slug}`} class="bracket-button">
+                        <div class="medium-text left-bracket">{t.global.bracket}</div>
+                        <div class="bracket-button-text">
+                            <div class="medium-text main">{tag.name}</div>
+                            <div class="medium-text absolute">{tag.name}</div>
+                        </div>
+                        <div class="medium-text right-bracket">{t.global.bracket}</div>
+                    </a>
+                ))}
+            </div>
+        </div>
+
+        <div class="featured-post-heading-wrapper">
+            <a href={`/blog/${post.id}`} class="big-text featured-post-title">
+                {post.data.title}
+            </a>
+        </div>
+
+        <div class="featured-post-content">
+            <div class="featured-post-sticky-content">
+                <a href={`/blog/${post.id}`} class="featured-post-image-wrapper" aria-label={post.data.title}>
+                    {post.data.feature_image ? (
+                        <figure>
+                            {/* Bigger size on desktop for better resolution */}
+                            <Image
+                                class="card-image-inner"
+                                src={processedImage}
+                                alt={post.data.title}
+                    inferSize={true}
+                                loading="lazy"
+                                format="webp"
+                                widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000, 2400, 2800]}
+                                sizes="(max-width: 479px) 260px, (max-width: 1080px) calc(66vw - 56px), 50vw"
+                            />
+                        </figure>
+                    ) : (
+                        <div class="placeholder flex-center">
+                            <Placeholder/>
+                        </div>
+                    )}
+                </a>
+
+                <div class="featured-post-excerpt">                                           
+                    <p class="paragraph">
+                        {post.data.excerpt}
+                    </p>
+                </div>
+
+                <div class="card-extra-info card-small-text">
+                    <p class="paragraph">
+                        <span>
+                            {t.global.by}
+                            {authors.map((author, index) => {
+                                const isLast = index === authors.length - 1;
+
+                                return (                                                    
+                                    <a href={`/authors/${author.slug}`}>{author.name}</a><>{!isLast ? " & " : ","}</>
+                                );
+                            })}
+                        </span>
+                        <span>
+                            {formatted_date}
+                        </span>
+                    </p>
+                </div>
+
+                <a href={`/blog/${post.id}`} class="small-arrow-button">
+                    <div class="small-arrow-button-text">{t.global.discover_more}</div>
+                    <div class="small-arrow-wrapper">
+                        <SmallArrowIcon/>
+                    </div>
+                </a>
+            </div>
+
+            <div class="horizontal-line"></div>
+        </div>
+    </div>
+</div>
