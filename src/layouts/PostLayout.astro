@@ -1,0 +1,191 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import globalSettings from '@config/config.json.ts';
+import type { PostProps } from "@src-types/types";
+import { formatDate, slugify } from "@utils/utils";
+import BackgroundMediaPostHeader from "../components/BackgroundMediaPostHeader.astro";
+import DefaultPostHeader from "../components/DefaultPostHeader.astro";
+import Social from "../components/Social.astro";
+import SmallArrowIcon from "@assets/icons/SmallArrowIcon.astro";
+import FooterCreative from "../components/FooterCreative.astro";
+import FooterNormal from "../components/FooterNormal.astro";
+
+import "@styles/post.css";
+import "@styles/post-content.css";
+
+const t = await import(/* @vite-ignore */ `@locales/${globalSettings.language}.json`)
+  .catch(() => import(/* @vite-ignore */ '@locales/en.json'));
+
+const { post, previous_post, next_post, minutes_read } = Astro.props as PostProps;
+
+const { title, excerpt, feature_image, feature_video, post_header_type, post_template: post_template_data } = post.data;
+
+const post_header_type_global = globalSettings.post_header_type;
+const post_header = post_header_type ?? post_header_type_global;
+
+const post_template_global = globalSettings.post_template;
+const post_template = post_template_data ?? post_template_global;
+
+const feature_media = feature_image || feature_video;
+
+const currentUrl = Astro.request.url;
+const encodedTitle = encodeURIComponent(title);
+
+let tag_slug, tag_name;
+
+if(post.data.tags && post.data.tags.length > 0){
+    tag_name = post.data.tags[0];
+    tag_slug = slugify(tag_name)
+}
+---
+
+<BaseLayout globalSettings={globalSettings} t={t} type="image" title={title} description={excerpt} image={feature_image ? feature_image : globalSettings.site_meta_image_source}>
+  <main
+    data-accent-navigation={
+      !feature_media
+        ? "true"
+        : (post_header === "Background Media" ||
+          post_header === "Background Media Centered")
+          ? "false"
+          : "true"
+    }
+  >
+    <article class="article" data-is-post="true" data-post-header-type={post_header} data-has-featured-image={feature_image ? "true" : "false"} 
+      data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true">        
+        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ? 
+          (
+            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={post} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true} minutes_read={minutes_read}/>
+          ) : (
+            <DefaultPostHeader globalSettings={globalSettings} t={t} post={post} minutes_read={minutes_read} post_header={post_header} post_template={post_template}/>
+          )
+        }
+
+      <div class:list={{
+          "post-content": true,
+          "narrow-container": true,
+          "right-aligned-post-content": post_template === "Right Aligned",
+          "hidden-post-content": globalSettings.use_page_load_animations
+        }}>
+        <div class="post-content-inner-wrapper">
+          <div class="post-content-inner">
+            <slot/>
+
+            <div class="post-share">
+              <div class="socials post-share-icons">
+                <Social social={{
+                  is_share_social: true, 
+                  url: `https://www.facebook.com/sharer.php?u=${currentUrl}`, 
+                  text: 'Share on Facebook', 
+                  icon: ` 
+                      <svg width="100%" height="100%" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12.25 11.8125H14.4375L15.3125 8.3125H12.25V6.5625C12.25 5.66125 12.25 4.8125 14 4.8125H15.3125V1.8725C15.0273 1.83488 13.9501 1.75 12.8126 1.75C10.437 1.75 8.75 3.19987 8.75 5.8625V8.3125H6.125V11.8125H8.75V19.25H12.25V11.8125Z" fill="currentColor"/>
+                      </svg>
+                    `
+                }}/>
+
+                <Social social={{
+                  is_share_social: true, 
+                  url: `https://twitter.com/intent/tweet?url=${currentUrl}&amp;text=${encodedTitle}`, 
+                  text: 'Share on X', 
+                  icon: ` 
+                      <svg width="100%" height="100%" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.8887 18.7031L12.3284 9.14125L12.3396 9.15022L18.2547 2.29688H16.278L11.4595 7.875L7.63296 2.29688H2.44893L8.57355 11.2241L8.57281 11.2234L2.11328 18.7031H4.08993L9.44702 12.4971L13.7046 18.7031H18.8887ZM6.84977 3.78835L16.0542 17.2117H14.4878L5.27593 3.78835H6.84977Z" fill="currentColor"/>
+                      </svg>
+                    `
+                }}/>
+
+                <Social social={{
+                  is_share_social: true, 
+                  url: `https://www.linkedin.com/shareArticle?mini=true&amp;url=${currentUrl}&amp;title=${encodedTitle}`, 
+                  text: 'Share on Linkedin', 
+                  icon: ` 
+                      <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M6.94141 5.00002C6.94114 5.53046 6.73017 6.03906 6.35491 6.41394C5.97965 6.78883 5.47084 6.99929 4.94041 6.99902C4.40997 6.99876 3.90137 6.78779 3.52649 6.41253C3.1516 6.03727 2.94114 5.52846 2.94141 4.99802C2.94167 4.46759 3.15264 3.95899 3.5279 3.5841C3.90316 3.20922 4.41197 2.99876 4.94241 2.99902C5.47284 2.99929 5.98144 3.21026 6.35633 3.58552C6.73121 3.96078 6.94167 4.46959 6.94141 5.00002ZM7.00141 8.48002H3.00141V21H7.00141V8.48002ZM13.3214 8.48002H9.34141V21H13.2814V14.43C13.2814 10.77 18.0514 10.43 18.0514 14.43V21H22.0014V13.07C22.0014 6.90002 14.9414 7.13002 13.2814 10.16L13.3214 8.48002Z" fill="currentColor"/>
+                      </svg>
+                    `
+                }}/>
+
+                <a href="javascript:" class="social clipboard-link" aria-label="Copy link">
+                  <div class="social-inner social-inner-bigger">
+                    <svg width="100%" height="100%" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19.7983 21.2135L16.9699 24.0419C15.9917 25.02 14.813 25.5091 13.4336 25.5091C12.0543 25.5091 10.876 25.02 9.89882 24.0419C8.92065 23.0637 8.43157 21.885 8.43157 20.5056C8.43157 19.1263 8.92065 17.948 9.89882 16.9708L12.7272 14.1424L14.1415 15.5566L11.313 18.385C10.7238 18.9743 10.4291 19.6814 10.4291 20.5063C10.4291 21.3313 10.7238 22.0384 11.313 22.6277C11.9023 23.2169 12.6094 23.5116 13.4344 23.5116C14.2593 23.5116 14.9664 23.2169 15.5557 22.6277L18.3841 19.7992L19.7983 21.2135ZM14.8486 20.5063L13.4344 19.0921L19.0912 13.4353L20.5054 14.8495L14.8486 20.5063ZM21.2125 19.7992L19.7983 18.385L22.6267 15.5566C23.216 14.9673 23.5106 14.2602 23.5106 13.4353C23.5106 12.6103 23.216 11.9032 22.6267 11.314C22.0375 10.7247 21.3304 10.4301 20.5054 10.4301C19.6805 10.4301 18.9734 10.7247 18.3841 11.314L15.5557 14.1424L14.1415 12.7282L16.9699 9.89974C17.9481 8.92158 19.1268 8.4325 20.5061 8.4325C21.8855 8.4325 23.0637 8.92158 24.041 9.89975C25.0191 10.8779 25.5082 12.0567 25.5082 13.436C25.5082 14.8153 25.0191 15.9936 24.041 16.9708L21.2125 19.7992Z" fill="currentColor"/>
+                    </svg>
+                  </div>
+                </a>
+
+                <div class="clipboard-alert">
+                    <small>{t.post.clipboard}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class:list={['article-footer', { 'right-aligned-post-content': post_template === "Right Aligned" }]}>
+        <div class="related-posts last-section narrow-container">
+          <div class="related-post-wrapper">
+            {previous_post && 
+              <a href={`/blog/${previous_post.id}`} class="related-post">
+                <span class="related-post-arrow flex-center rotated">
+                  <SmallArrowIcon />
+                </span>
+                <p>
+                  {t.post.previous_post}
+                </p>                          
+              </a>
+            }
+          </div>
+
+          <div class="related-post-wrapper">
+            {next_post && 
+              <a href={`/blog/${next_post.id}`} class="related-post">
+                <p>
+                  {t.post.next_post}
+                </p>  
+                <span class="related-post-arrow flex-center">
+                  <SmallArrowIcon />
+                </span>                        
+              </a>
+            }
+          </div>             
+        </div>
+      </footer>
+    </article>
+  </main>
+
+  {globalSettings.footer_type == "Creative" ? (
+    <FooterCreative t={t} globalSettings={globalSettings}/>
+  ) : (
+    <FooterNormal t={t} globalSettings={globalSettings}/>
+  )}
+</BaseLayout>
+
+<script>
+  import { copyUrlToClipboard } from "@js/global.js"
+  document.addEventListener('DOMContentLoaded', function () {
+    copyUrlToClipboard("post-share-icons");
+  })    
+</script>
+
+{post_template === "Right Aligned" && (
+  <script>
+    import { setH2position, debounce } from "@js/global.js";
+
+    setH2position();
+    window.addEventListener(
+      "resize",
+      debounce(() => {
+        setH2position();
+      }, 200)
+    );
+  </script>
+)}
+
+{globalSettings.use_image_zoom && (
+    <script is:inline src="https://cdn.jsdelivr.net/npm/lightense-images@1.0.17/dist/lightense.min.js"></script>
+    <script>
+      import { setLightense } from "@js/global.js";
+      setLightense();
+    </script>
+)}

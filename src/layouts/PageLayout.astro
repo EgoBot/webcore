@@ -1,0 +1,94 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import globalSettings from '@config/config.json.ts';
+import type { CollectionEntry } from "astro:content";
+import BackgroundMediaPostHeader from "../components/BackgroundMediaPostHeader.astro";
+import DefaultPostHeader from "../components/DefaultPostHeader.astro";
+import FooterCreative from "../components/FooterCreative.astro";
+import FooterNormal from "../components/FooterNormal.astro";
+
+import "@styles/post.css";
+import "@styles/post-content.css";
+
+
+const t = await import(/* @vite-ignore */ `@locales/${globalSettings.language}.json`)
+  .catch(() => import(/* @vite-ignore */ '@locales/en.json'));
+
+const page  = Astro.props.page as CollectionEntry<"page">;
+
+const { title, excerpt, feature_image, feature_video, page_header_type, page_template: page_template_data } = page.data;
+
+const post_header_type_global = globalSettings.post_header_type;
+const post_header = page_header_type ?? post_header_type_global;
+
+const post_template_global = globalSettings.post_template;
+const post_template = page_template_data ?? post_template_global;
+
+const feature_media = feature_image || feature_video;
+---
+
+<BaseLayout globalSettings={globalSettings} t={t} type="image" title={title} description={excerpt} image={feature_image ? feature_image : globalSettings.site_meta_image_source}>
+  <main
+    data-accent-navigation={
+      !feature_media
+        ? "true"
+        : (post_header === "Background Media" ||
+          post_header === "Background Media Centered")
+          ? "false"
+          : "true"
+    }
+  >
+    <article class="article" data-is-post="false" data-post-header-type={post_header} data-has-featured-image={feature_image ? "true" : "false"} 
+      data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true">        
+        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ? 
+          (
+            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={page} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true}/>
+          ) : (
+            <DefaultPostHeader globalSettings={globalSettings} t={t} post={page} post_header={post_header} post_template={post_template}/>
+          )
+        }
+
+      <div class:list={{
+          "post-content": true,
+          "narrow-container": true,
+          "right-aligned-post-content": post_template === "Right Aligned",
+          "hidden-post-content": globalSettings.use_page_load_animations
+        }}>
+        <div class="post-content-inner-wrapper">
+          <div class="post-content-inner">
+            <slot/>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  {globalSettings.footer_type == "Creative" ? (
+    <FooterCreative t={t} globalSettings={globalSettings}/>
+  ) : (
+    <FooterNormal t={t} globalSettings={globalSettings}/>
+  )}
+</BaseLayout>
+
+{post_template === "Right Aligned" && (
+  <script is:inline>
+    import { setH2position, debounce } from "@js/global.js";
+
+    setH2position();
+    window.addEventListener(
+      "resize",
+      debounce(() => {
+        setH2position();
+      }, 200)
+    );
+  </script>
+)}
+
+{globalSettings.use_image_zoom && (
+  <script is:inline src="https://cdn.jsdelivr.net/npm/lightense-images@1.0.17/dist/lightense.min.js"></script>
+  <script>
+    import { setLightense } from "@js/global.js";
+    setLightense();
+  </script>
+)}
+
