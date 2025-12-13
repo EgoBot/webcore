@@ -1,0 +1,29 @@
+---
+import BaseHead from "@layouts/BaseHead.astro";
+import Navbar from "@components/Navbar.astro";
+import type { SeoProps } from "@src-types/types";
+
+const { globalSettings, t } = Astro.props;
+
+const {
+	type,
+	title,
+	description,
+	image,
+	noindex,
+} = Astro.props as SeoProps;
+---
+
+<!doctype html>
+<html lang={globalSettings.language} data-smooth-scroll={globalSettings.scrolling_type} data-show-card-extra-info={globalSettings.show_post_card_extra_info} data-footer-type={globalSettings.footer_type} data-primary-font={globalSettings.primary_font}> 
+	<head>
+		<BaseHead globalSettings={globalSettings} type={type} title={title} description={description} image={image} noindex={noindex}/>
+	</head>
+	<body>
+		<div class="site-content">
+			<Navbar globalSettings={globalSettings} t={t}/>
+			<slot />
+			<div class="background-blur"></div>
+		</div>
+	</body>
+</html>

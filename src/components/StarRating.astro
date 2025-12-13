@@ -1,0 +1,50 @@
+---
+interface Props {
+  rating: number;
+  maxStars?: number;
+}
+
+const { rating, maxStars = 5 } = Astro.props;
+const clampedRating = Math.min(Math.max(rating, 0), maxStars);
+---
+
+<div class="star-rating">
+  {Array.from({ length: maxStars }, (_, i) => (
+    <svg
+      class={`star ${i < clampedRating ? 'filled' : 'empty'}`}
+      width="22"
+      height="22"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M10 1.5L12.5 6.5L18 7.5L14 11.5L15 17L10 14.5L5 17L6 11.5L2 7.5L7.5 6.5L10 1.5Z"
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="1"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ))}
+</div>
+
+<style>
+  .star-rating {
+    display: inline-flex;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .star {
+    color: #fbbf24; /* Yellow-400 */
+  }
+
+  .star.filled {
+    color: #f59e0b; /* Amber-500 */
+  }
+
+  .star.empty {
+    color: #d1d5db; /* Gray-300 */
+  }
+</style>

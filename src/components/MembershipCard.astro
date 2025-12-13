@@ -1,0 +1,54 @@
+---
+import CheckIcon from "@assets/icons/CheckIcon.astro";
+import type { MembershipCardProps } from "@src-types/types"
+
+const { tier, yearly = false } = Astro.props as {tier: MembershipCardProps, yearly: boolean}
+const { t } = Astro.props;
+---
+
+<div class="tier-card" data-yearly={tier.yearly_price} data-monthly={tier.monthly_price}>
+    <div class="tier-card-top">
+        <div class="tier-name subtitle">
+            ({tier.name})
+        </div>
+
+        <div class="tier-price">
+            <h2>
+                {yearly ? <>{tier.yearly_price}/{t.membership_page.year}</> : <>{tier.monthly_price}/{t.membership_page.month}</>}
+            </h2>
+        </div>
+
+         {tier.description && 
+            <p class="tier-description">
+                {tier.description}
+            </p>
+        }
+    </div>
+
+    {tier.benefits &&
+        <div class="benefits-outer">
+            <ul class="benefits-list">
+                {
+                    tier.benefits.map((benefit) =>
+                        <li class="benefit-list-item">
+                            <div class="benefit-icon-outer flex-center">
+                                <span class="benefit-icon flex-center">
+                                    <CheckIcon />
+                                </span>
+                            </div>                             
+                            <p>
+                                {benefit}
+                            </p>                         
+                        </li>
+                    )
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="tier-button-wrapper">
+        <a class="button flex-center" href="#">
+            {t.membership_page.subscribe_now}
+        </a>
+    </div>
+</div>

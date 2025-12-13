@@ -1,0 +1,359 @@
+---
+import StarRating from './StarRating.astro';
+
+interface Props {
+  name?: string;
+  title?: string;
+  company?: string;
+  stars: number;
+  videoUrl: string;
+  date: Date;
+  reviewText?: string;
+}
+
+const {
+  name = "Anonymous",
+  title,
+  company,
+  stars,
+  videoUrl,
+  date,
+  reviewText
+} = Astro.props;
+
+// Check if video is an embed URL (YouTube, Vimeo) or direct video file
+const isEmbedVideo = videoUrl.includes('youtube.com/embed') ||
+                     videoUrl.includes('player.vimeo.com') ||
+                     videoUrl.includes('youtu.be');
+
+// Format date as US format (e.g., "Jan 7, 2023")
+const formattedDate = date.toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric'
+});
+
+// Truncate review text to 400 characters
+const truncatedText = reviewText && reviewText.length > 400
+  ? reviewText.substring(0, 400) + '...'
+  : reviewText;
+
+// Generate unique ID for video player
+const videoId = `video-${Math.random().toString(36).substring(7)}`;
+---
+
+<div class="testimonial-video-card" data-video-card={videoId}>
+  {isEmbedVideo ? (
+    <iframe
+      src={videoUrl}
+      class="video-iframe"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  ) : (
+    <>
+      <div class="video-wrapper">
+        <video
+          id={videoId}
+          class="video-player"
+          preload="auto"
+          playsinline
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- Video overlay with play/pause button -->
+        <div class="video-overlay" data-video-overlay={videoId}>
+          <div class="overlay-gradient"></div>
+          <div class="overlay-content">
+            <div class="stars-overlay">
+              <StarRating rating={stars} />
+            </div>
+            <div class="name-overlay">{name}</div>
+            {title && <div class="title-overlay">{title}</div>}
+          </div>
+          <button class="video-control-button" data-control-btn={videoId}>
+            <!-- Play icon - shown when paused -->
+            <svg class="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5L19 12L8 19V5Z" fill="white"/>
+            </svg>
+            <!-- Pause icon - shown when playing -->
+            <svg class="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+              <rect x="9" y="7" width="2" height="10" fill="white" rx="1"/>
+              <rect x="13" y="7" width="2" height="10" fill="white" rx="1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {reviewText && (
+        <div class="card-body">
+          <p class="review-text" set:html={truncatedText}></p>
+        </div>
+      )}
+    </>
+  )}
+</div>
+
+<script>
+  // Initialize video players
+  function initVideoPlayer(videoId: string) {
+    const video = document.getElementById(videoId) as HTMLVideoElement;
+    const overlay = document.querySelector(`[data-video-overlay="${videoId}"]`) as HTMLElement;
+    const controlBtn = document.querySelector(`[data-control-btn="${videoId}"]`) as HTMLElement;
+    const playIcon = controlBtn?.querySelector('.play-icon') as SVGElement;
+    const pauseIcon = controlBtn?.querySelector('.pause-icon') as SVGElement;
+    const videoWrapper = video.closest('.video-wrapper') as HTMLElement;
+
+    if (!video || !overlay || !controlBtn || !videoWrapper) {
+      console.error('Missing video elements:', videoId);
+      return;
+    }
+
+    // Load video metadata
+    video.load();
+
+    // Update button icon based on video state
+    function updateIcon() {
+      if (video.paused) {
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+      } else {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+      }
+    }
+
+    // Toggle play/pause
+    function togglePlayPause() {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+
+    // Click anywhere on video wrapper to play/pause
+    videoWrapper.addEventListener('click', togglePlayPause);
+
+    // Update icon when video state changes
+    video.addEventListener('play', updateIcon);
+    video.addEventListener('pause', updateIcon);
+
+    // Show overlay on mouseenter when video has started
+    videoWrapper.addEventListener('mouseenter', () => {
+      if (video.currentTime > 0) {
+        overlay.style.opacity = '1';
+      }
+    });
+
+    // Hide overlay on mouseleave when playing
+    videoWrapper.addEventListener('mouseleave', () => {
+      if (!video.paused && video.currentTime > 0) {
+        overlay.style.opacity = '0';
+      }
+    });
+
+    // Reset when video ends
+    video.addEventListener('ended', () => {
+      video.currentTime = 0;
+      overlay.style.opacity = '1';
+      updateIcon();
+    });
+  }
+
+  // Initialize all video cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const videoCards = document.querySelectorAll('[data-video-card]');
+    videoCards.forEach(card => {
+      const videoId = card.getAttribute('data-video-card');
+      if (videoId) {
+        initVideoPlayer(videoId);
+      }
+    });
+  });
+</script>
+
+<style>
+  .testimonial-video-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    transition: box-shadow 0.2s ease;
+    position: relative;
+  }
+
+  .testimonial-video-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background: #000;
+    cursor: pointer;
+  }
+
+  .video-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .video-iframe {
+    width: 100%;
+    height: 400px;
+  }
+
+  /* Video overlay */
+  .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    transition: opacity 0.2s ease;
+    z-index: 2;
+    pointer-events: none; /* Don't block clicks to video */
+  }
+
+  .overlay-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+    z-index: -1;
+    pointer-events: none; /* Don't block clicks */
+  }
+
+  .overlay-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .name-overlay {
+    font-size: 18.9px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-transform: none !important;
+  }
+
+  .title-overlay {
+    font-size: 14.7px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-transform: none !important;
+  }
+
+  .stars-overlay {
+    display: flex;
+    margin-bottom: 4px;
+  }
+
+  .stars-overlay :global(.star) {
+    color: #fbbf24 !important;
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  /* Video control button */
+  .video-control-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 64px;
+    height: 64px;
+    pointer-events: none; /* Visual only - clicks go through to wrapper */
+  }
+
+  /* Hover effect on wrapper when hovering button area */
+  .video-wrapper:hover .video-control-button {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .video-wrapper:active .video-control-button {
+    transform: scale(0.95);
+  }
+
+  /* Card body for review text */
+  .card-body {
+    padding: 20px;
+  }
+
+  .review-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+    margin: 0;
+    text-transform: none !important;
+  }
+
+  .review-text :global(*) {
+    text-transform: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .video-overlay {
+      padding: 16px;
+    }
+
+    .name-overlay {
+      font-size: 16px;
+    }
+
+    .title-overlay {
+      font-size: 13px;
+    }
+
+    .stars-overlay :global(.star) {
+      width: 16px !important;
+      height: 16px !important;
+    }
+
+    .video-control-button {
+      width: 53px;
+      height: 53px;
+    }
+
+    .video-control-button svg {
+      width: 27px;
+      height: 27px;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .review-text {
+      font-size: 14px;
+    }
+  }
+</style>

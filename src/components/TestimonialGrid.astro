@@ -1,0 +1,443 @@
+---
+import { getCollection } from 'astro:content';
+import TestimonialCard from './TestimonialCard.astro';
+import TestimonialVideoCard from './TestimonialVideoCard.astro';
+
+interface Props {
+  category?: string;
+  more?: number;
+  total?: number;
+  layoutStyle?: 'masonry' | 'grid';
+  showDate?: boolean;
+}
+
+const {
+  category,
+  more,
+  total,
+  layoutStyle = 'masonry',
+  showDate = true
+} = Astro.props;
+
+// Get all testimonials
+let allTestimonials = await getCollection('testimonials');
+
+// Filter out drafts
+allTestimonials = allTestimonials.filter(t => !t.data.draft);
+
+// Filter by category if specified
+if (category) {
+  allTestimonials = allTestimonials.filter(t => t.data.category === category);
+}
+
+// Sort by rank (lower = higher priority), then by date (newest first)
+allTestimonials.sort((a, b) => {
+  const rankA = a.data.rank ?? 999;
+  const rankB = b.data.rank ?? 999;
+
+  if (rankA !== rankB) {
+    return rankA - rankB;
+  }
+
+  return b.data.date.getTime() - a.data.date.getTime();
+});
+
+// Limit to total if specified
+const displayTestimonials = total
+  ? allTestimonials.slice(0, total)
+  : allTestimonials;
+
+// Determine initial display count
+const initialCount = more && more < displayTestimonials.length
+  ? more
+  : displayTestimonials.length;
+
+const hasLoadMore = more && displayTestimonials.length > more;
+---
+
+<div class="testimonial-grid-wrapper">
+  <div class={`testimonial-grid ${layoutStyle}`} id="testimonial-grid">
+    {displayTestimonials.map((testimonial, index) => {
+      const hasVideo = !!testimonial.data.review_video;
+      const isHidden = more && index >= initialCount;
+
+      return (
+        <div class="testimonial-item" data-testimonial style={isHidden ? 'display: none;' : ''}>
+          {hasVideo ? (
+            <TestimonialVideoCard
+              name={testimonial.data.name}
+              title={testimonial.data.title}
+              company={testimonial.data.company}
+              stars={testimonial.data.stars}
+              videoUrl={testimonial.data.review_video!}
+              date={testimonial.data.date}
+              reviewText={testimonial.body}
+            />
+          ) : (
+            <TestimonialCard
+              name={testimonial.data.name}
+              title={testimonial.data.title}
+              company={testimonial.data.company}
+              profilePic={testimonial.data.profile_pic}
+              stars={testimonial.data.stars}
+              reviewText={testimonial.body}
+              date={testimonial.data.date}
+              showDate={showDate}
+            />
+          )}
+        </div>
+      );
+    })}
+  </div>
+
+  {hasLoadMore && (
+    <div class="load-more-container">
+      <button class="load-more-button" id="load-more-btn">
+        Show More
+      </button>
+    </div>
+  )}
+</div>
+
+{hasLoadMore && layoutStyle === 'masonry' && (
+  <script define:vars={{ more, initialCount }}>
+    function initMasonry() {
+      let currentCount = initialCount;
+      const grid = document.getElementById('testimonial-grid');
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      const allItems = Array.from(document.querySelectorAll('.testimonial-item'));
+
+      if (!grid || !window.Masonry) {
+        console.log('Waiting for Masonry...');
+        return;
+      }
+
+      console.log('Initializing Masonry with', allItems.length, 'items');
+
+      // Create a container for hidden items (not in masonry yet)
+      const hiddenItems = [];
+
+      // Separate initial items from hidden items
+      allItems.forEach((item, index) => {
+        if (index >= initialCount) {
+          hiddenItems.push(item);
+          item.remove(); // Completely remove from DOM
+        }
+      });
+
+      // Initialize Masonry with only visible items
+      const msnry = new window.Masonry(grid, {
+        itemSelector: '.testimonial-item',
+        columnWidth: '.testimonial-item',
+        gutter: 20,
+        percentPosition: false,
+        transitionDuration: 0
+      });
+
+      // Get initial visible items
+      const initialItems = Array.from(grid.querySelectorAll('.testimonial-item'));
+
+      console.log('🔍 DIAGNOSTIC: Found', initialItems.length, 'items to fade');
+      console.log('🔍 DIAGNOSTIC: First item:', initialItems[0]);
+
+      // Relayout after images load, then fade in individual cards
+      if (window.imagesLoaded) {
+        console.log('🔍 DIAGNOSTIC: imagesLoaded library EXISTS');
+        window.imagesLoaded(grid, function() {
+          console.log('🔍 DIAGNOSTIC: imagesLoaded CALLBACK FIRED');
+          msnry.layout();
+          grid.classList.add('masonry-ready');
+
+          // Set opacity 0 AFTER layout (no visibility:hidden to allow video init)
+          initialItems.forEach(item => {
+            item.style.opacity = '0';
+          });
+
+          // RAF #1: Browser paints opacity:0
+          requestAnimationFrame(() => {
+            // Set transition
+            initialItems.forEach((item, index) => {
+              const duration = 2; // Test with 2 seconds
+              const delay = Math.random() * 0.3;
+              item.style.transition = `opacity ${duration}s ease ${delay}s`;
+            });
+
+            // RAF #2: Browser ready for transition
+            requestAnimationFrame(() => {
+              // Change to opacity:1 - transition plays!
+              initialItems.forEach((item) => {
+                item.style.opacity = '1';
+              });
+            });
+          });
+        });
+      } else {
+        // No imagesLoaded, show immediately after layout
+        msnry.layout();
+        grid.classList.add('masonry-ready');
+
+        // Set opacity 0 AFTER layout (no visibility:hidden to allow video init)
+        initialItems.forEach(item => {
+          item.style.opacity = '0';
+        });
+
+        // RAF #1: Browser paints opacity:0
+        requestAnimationFrame(() => {
+          // Set transition
+          initialItems.forEach((item, index) => {
+            const duration = 2; // Test with 2 seconds
+            const delay = Math.random() * 0.3;
+            item.style.transition = `opacity ${duration}s ease ${delay}s`;
+          });
+
+          // RAF #2: Browser ready for transition
+          requestAnimationFrame(() => {
+            // Change to opacity:1 - transition plays!
+            initialItems.forEach((item) => {
+              item.style.opacity = '1';
+            });
+          });
+        });
+      }
+
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          const itemsToAdd = hiddenItems.splice(0, more);
+
+          if (itemsToAdd.length === 0) return;
+
+          console.log('Adding', itemsToAdd.length, 'items');
+
+          // Append items to grid
+          itemsToAdd.forEach(item => {
+            grid.appendChild(item);
+          });
+
+          // Append and layout with Masonry
+          msnry.appended(itemsToAdd);
+
+          // Use imagesLoaded to ensure layout is complete before fade-in
+          if (window.imagesLoaded) {
+            window.imagesLoaded(itemsToAdd, function() {
+              msnry.layout();
+
+              // Set opacity 0 AFTER layout (no visibility:hidden to allow video init)
+              itemsToAdd.forEach(item => {
+                item.style.opacity = '0';
+              });
+
+              // RAF #1: Browser paints opacity:0
+              requestAnimationFrame(() => {
+                // Set transition
+                itemsToAdd.forEach((item, index) => {
+                  const duration = 2; // Test with 2 seconds
+                  const delay = Math.random() * 0.3;
+                  item.style.transition = `opacity ${duration}s ease ${delay}s`;
+                });
+
+                // RAF #2: Browser ready for transition
+                requestAnimationFrame(() => {
+                  // Change to opacity:1 - transition plays!
+                  itemsToAdd.forEach((item) => {
+                    item.style.opacity = '1';
+                  });
+                });
+              });
+            });
+          } else {
+            // No imagesLoaded library, just layout and fade
+            msnry.layout();
+
+            // Set opacity 0 AFTER layout (no visibility:hidden to allow video init)
+            itemsToAdd.forEach(item => {
+              item.style.opacity = '0';
+            });
+
+            // RAF #1: Browser paints opacity:0
+            requestAnimationFrame(() => {
+              // Set transition
+              itemsToAdd.forEach((item, index) => {
+                const duration = 2; // Test with 2 seconds
+                const delay = Math.random() * 0.3;
+                item.style.transition = `opacity ${duration}s ease ${delay}s`;
+              });
+
+              // RAF #2: Browser ready for transition
+              requestAnimationFrame(() => {
+                // Change to opacity:1 - transition plays!
+                itemsToAdd.forEach((item) => {
+                  item.style.opacity = '1';
+                });
+              });
+            });
+          }
+
+          currentCount += itemsToAdd.length;
+
+          // Hide button if no more hidden items
+          if (hiddenItems.length === 0) {
+            loadMoreBtn.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    // Load libraries
+    const masonryScript = document.createElement('script');
+    masonryScript.src = 'https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js';
+    masonryScript.onload = function() {
+      const imagesScript = document.createElement('script');
+      imagesScript.src = 'https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js';
+      imagesScript.onload = function() {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initMasonry);
+        } else {
+          initMasonry();
+        }
+      };
+      document.head.appendChild(imagesScript);
+    };
+    document.head.appendChild(masonryScript);
+  </script>
+)}
+
+{hasLoadMore && layoutStyle === 'grid' && (
+  <script define:vars={{ more, initialCount }}>
+    let currentCount = initialCount;
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const allItems = document.querySelectorAll('.testimonial-item');
+
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', () => {
+        const nextCount = currentCount + more;
+
+        // Show hidden items up to nextCount
+        allItems.forEach((item, index) => {
+          if (index < nextCount) {
+            item.style.display = '';
+          }
+        });
+
+        currentCount = nextCount;
+
+        // Hide button if all items are shown
+        if (currentCount >= allItems.length) {
+          loadMoreBtn.style.display = 'none';
+        }
+      });
+    }
+  </script>
+)}
+
+<style>
+  .testimonial-grid-wrapper {
+    width: 100%;
+  }
+
+  .testimonial-grid {
+    display: grid;
+    gap: 20px;
+    width: 100%;
+  }
+
+  /* Masonry layout using Masonry.js */
+  .testimonial-grid.masonry {
+    display: block;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .testimonial-grid.masonry.masonry-ready {
+    opacity: 1;
+  }
+
+  .testimonial-grid.masonry .testimonial-item {
+    width: calc((100% - 40px) / 3); /* 3 columns with 20px gaps */
+    margin-bottom: 20px;
+    /* opacity controlled by JavaScript for fade-in animation */
+  }
+
+  /* Regular grid layout */
+  .testimonial-grid.grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+
+  .testimonial-item {
+    width: 100%;
+    /* transition controlled by JavaScript for fade-in animation */
+  }
+
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+  }
+
+  .load-more-button {
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .load-more-button:hover {
+    background: #1F2937;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .load-more-button:active {
+    transform: translateY(0);
+  }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .testimonial-grid {
+      gap: 18px;
+    }
+
+    .testimonial-grid.masonry .testimonial-item {
+      width: calc((100% - 18px) / 2); /* 2 columns with 18px gap */
+      margin-bottom: 18px;
+    }
+
+    .testimonial-grid.grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .testimonial-grid {
+      gap: 16px;
+    }
+
+    .testimonial-grid.masonry {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .testimonial-grid.masonry .testimonial-item {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-grid.grid {
+      grid-template-columns: 1fr;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .load-more-container {
+      margin-top: 32px;
+    }
+  }
+</style>

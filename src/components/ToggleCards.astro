@@ -1,0 +1,35 @@
+---
+import type { ToggleCardsProps, ToggleCard } from "@src-types/types.ts";
+import ToggleArrowIcon from "@assets/icons/ToggleArrowIcon.astro";
+
+import "@styles/toggle-card.css"
+
+const {
+    toggle_cards
+} = Astro.props as ToggleCardsProps;
+---
+
+<div class="toggle-cards">
+    {toggle_cards.map((toggle_card: ToggleCard) => (
+        <div class="toggle-card" data-toggle-state="close">
+            <div class="toggle-heading">
+                <h4 class="toggle-heading-text">{toggle_card.title}</h4>
+                <button class="toggle-card-icon unstyled-button">      
+                    <ToggleArrowIcon />
+                </button>
+            </div>
+            <div class="toggle-content">
+                <p>
+                    {toggle_card.text}
+                </p>
+            </div>
+        </div>
+    ))}
+</div>
+
+<script>
+    import { setToggle } from "@js/global.js"
+    document.addEventListener('DOMContentLoaded', function () {
+        setToggle();
+    })    
+</script>
