@@ -25,6 +25,20 @@ const tags = (post.data.tags || [])
 }));
 
 const processedImage = resolveImagePath(post.data.feature_image);
+
+const video_glob = import.meta.glob('@assets/videos/*.{mp4,webm,mov}', { eager: true });
+
+const feature_video_filename = post.data.feature_video
+  ? post.data.feature_video.split('/').pop()!
+  : null;
+
+const feature_video_item = feature_video_filename
+  ? Object.entries(video_glob).find(([key, _]) =>
+      key.endsWith(feature_video_filename)
+    )
+  : null;
+
+const feature_video = feature_video_item ? (feature_video_item[1] as any).default : null;
 ---
 
 <div 
@@ -66,9 +80,9 @@ const processedImage = resolveImagePath(post.data.feature_image);
     </div>
 
     <div class="background-image slide-image-animation">
-         {post.data.feature_video ? (
+         {feature_video ? (
                 <video loop autoplay muted playsinline>
-                    <source src={post.data.feature_video} type="video/mp4" />
+                    <source src={feature_video} type="video/mp4" />
                 </video>
             ) : (
                 <>
