@@ -1,6 +1,7 @@
 ---
 import PostAuthors from "./PostAuthors.astro";
-import { slugify, resolveImagePath } from "@utils/utils";
+import { slugify } from "../utils/presentation.ts";
+import { resolveImagePath } from "../utils/assets.ts";
 import { Image } from "astro:assets";
 import type { DefaultPostHeaderProps } from "@src-types/types";
 

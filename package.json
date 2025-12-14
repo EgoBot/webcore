@@ -7,6 +7,9 @@
     "./components/*": "./src/components/*",
     "./layouts/*": "./src/layouts/*",
     "./utils/*": "./src/utils/*",
+    "./utils/presentation": "./src/utils/presentation.ts",
+    "./utils/assets": "./src/utils/assets.ts",
+    "./utils/content": "./src/utils/content.ts",
     "./styles/*": "./src/styles/*",
     "./assets/*": "./src/assets/*"
   },

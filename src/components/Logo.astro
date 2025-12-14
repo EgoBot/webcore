@@ -1,5 +1,5 @@
 ---
-import { getImage } from "@utils/utils.ts";
+import { getImage } from "../utils/assets.ts";
 import { Image } from "astro:assets";
 
 const logo_glob = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });

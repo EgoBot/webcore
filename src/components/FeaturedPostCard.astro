@@ -2,7 +2,8 @@
 import Placeholder from "../assets/icons/Placeholder.astro";
 import SmallArrowIcon from "../assets/icons/SmallArrowIcon.astro";
 import type { PostCardProps } from "@src-types/types";
-import { formatDate, slugify, resolveImagePath } from "@utils/utils";
+import { formatDate, slugify } from "../utils/presentation.ts";
+import { resolveImagePath } from "../utils/assets.ts";
 import { Image } from "astro:assets";
 
 const t = Astro.props.t;
