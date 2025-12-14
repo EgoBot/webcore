@@ -27,7 +27,7 @@ const tags = (post.data.tags || [])
 
 const processedImage = resolveImagePath(post.data.feature_image);
 
-const video_glob = import.meta.glob('@assets/videos/*.{mp4,webm,mov}', { eager: true });
+const video_glob = import.meta.glob('@assets/*.{mp4,webm,mov}', { eager: true });
 
 const feature_video_filename = post.data.feature_video
   ? post.data.feature_video.split('/').pop()!
