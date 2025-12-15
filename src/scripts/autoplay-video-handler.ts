@@ -24,20 +24,17 @@ function restartAutoplayVideos() {
       parent: videoElement.parentElement?.className
     });
 
-    // Only restart if video is paused
-    // This prevents interrupting videos that are already playing
-    if (videoElement.paused) {
-      // Small delay to ensure smooth restoration
-      setTimeout(() => {
-        videoElement.play().then(() => {
-          console.log(`Video ${index} started playing`);
-        }).catch((error) => {
-          // Silently catch play errors (e.g., user interaction required)
-          // This is expected behavior in some browsers
-          console.warn(`Autoplay video ${index} restart prevented:`, error);
-        });
-      }, 100);
-    }
+    // Always restart autoplay videos on page restoration
+    // Even if paused=false, the video might not be actually playing due to bfcache state
+    setTimeout(() => {
+      videoElement.play().then(() => {
+        console.log(`Video ${index} started playing`);
+      }).catch((error) => {
+        // Silently catch play errors (e.g., user interaction required)
+        // This is expected behavior in some browsers
+        console.warn(`Autoplay video ${index} restart prevented:`, error);
+      });
+    }, 100);
   });
 }
 
