@@ -13,18 +13,28 @@ function restartAutoplayVideos() {
   // Find all videos with autoplay attribute
   const autoplayVideos = document.querySelectorAll('video[autoplay]');
 
-  autoplayVideos.forEach((video) => {
+  console.log('Found autoplay videos:', autoplayVideos.length);
+
+  autoplayVideos.forEach((video, index) => {
     const videoElement = video as HTMLVideoElement;
+
+    console.log(`Video ${index}:`, {
+      paused: videoElement.paused,
+      src: videoElement.currentSrc,
+      parent: videoElement.parentElement?.className
+    });
 
     // Only restart if video is paused
     // This prevents interrupting videos that are already playing
     if (videoElement.paused) {
       // Small delay to ensure smooth restoration
       setTimeout(() => {
-        videoElement.play().catch((error) => {
+        videoElement.play().then(() => {
+          console.log(`Video ${index} started playing`);
+        }).catch((error) => {
           // Silently catch play errors (e.g., user interaction required)
           // This is expected behavior in some browsers
-          console.debug('Autoplay video restart prevented:', error);
+          console.warn(`Autoplay video ${index} restart prevented:`, error);
         });
       }, 100);
     }
