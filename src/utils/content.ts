@@ -62,7 +62,7 @@ export function getPostWithSiblings(posts: CollectionEntry<"blog">[], index: num
 export async function getTags() {
   const { posts } = await getSortedPosts();
 
-  const tags = posts.flatMap(post => post.data.tags ?? []).filter(tag => tag !== undefined && tag !== null);
+  const tags = posts.flatMap(post => post.data.topics ?? []).filter(tag => tag !== undefined && tag !== null);
 
   const tagData = [
     ...new Set(
@@ -109,7 +109,7 @@ export async function getPostsByTag({
     const normalizedTag = tag ? tag.toLowerCase() : null;
 
     return !data.draft && (
-      !normalizedTag || (data.tags && data.tags.some(postTag => postTag.toLowerCase() === normalizedTag))
+      !normalizedTag || (data.topics && data.topics.some(postTag => postTag.toLowerCase() === normalizedTag))
     );
   });
 

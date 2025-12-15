@@ -38,7 +38,7 @@ const showExcerpt = is_for_end_page
 
 const showAuthorInfo = is_for_end_page && (showAuthorReadTime ?? false);
 
-const tags = (post.data.tags || [])
+const tags = (post.data.topics || [])
   .slice(0, 2)
   .map(tagName => ({
     name: tagName,

@@ -23,7 +23,7 @@ const {
 const showTags = showTagsOnPost ?? false;
 const showAuthorInfo = showAuthorReadTime ?? false;
 
-const tags = (post.data.tags || [])
+const tags = (post.data.topics || [])
   .slice(0, 2)
   .map(tagName => ({
     name: tagName,
