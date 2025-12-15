@@ -87,31 +87,35 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
                     )}
 
                     {is_for_end_page ? (
-                        <div class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
-                            <h1>{post.data.title}</h1>
-                        </div>
+                        <>
+                            <div class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
+                                <h1>{post.data.title}</h1>
+                            </div>
 
-                        <div class:list={['excerpt-and-authors', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                            <div class:list={['excerpt-and-authors', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                                {showExcerpt && post.data.excerpt && (
+                                    <div class="post-summary-wrapper">
+                                        <p class="paragraph overlay">{post.data.excerpt}</p>
+                                    </div>
+                                )}
+
+                                {showAuthorInfo && (
+                                    <PostAuthors post={post} minutes_read={minutes_read}/>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <a href={`/blog/${post.id}`} class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
+                                <h1>{post.data.title}</h1>
+                            </a>
+
                             {showExcerpt && post.data.excerpt && (
-                                <div class="post-summary-wrapper">
+                                <div class:list={['post-summary-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
                                     <p class="paragraph overlay">{post.data.excerpt}</p>
                                 </div>
                             )}
-
-                            {showAuthorInfo && (
-                                <PostAuthors post={post} minutes_read={minutes_read}/>
-                            )}
-                        </div>
-                    ) : (
-                        <a href={`/blog/${post.id}`} class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
-                            <h1>{post.data.title}</h1>
-                        </a>
-
-                        {showExcerpt && post.data.excerpt && (
-                            <div class:list={['post-summary-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-                                <p class="paragraph overlay">{post.data.excerpt}</p>
-                            </div>
-                        )}
+                        </>
                     )}
                 </div>
 
