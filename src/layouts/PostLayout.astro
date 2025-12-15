@@ -21,7 +21,7 @@ const { post, previous_post, next_post, minutes_read } = Astro.props as PostProp
 const { title, excerpt, feature_image, feature_video, post_header_type, post_template: post_template_data } = post.data;
 
 // Display settings with defaults for post page
-const showTagsOnPost = post.data.show_tags_on_post ?? false; // default off
+const showTagsOnPost = post.data.show_topics_on_post ?? false; // default off
 const showAuthorReadTime = post.data.show_author_read_time ?? false; // default off
 const showPrevNext = post.data.show_prev_next ?? false; // default off
 
