@@ -27,7 +27,7 @@ const authors = (post.data.authors || []).map(authorName => ({
 const processedImage = resolveImagePath(post.data.feature_image);
 ---
 
-<div class="card">
+<div class="card" data-topics={JSON.stringify((post.data.topics || []).map(t => slugify(t)))}>
     <a href={`/blog/${post.id}`} class="card-image-wrapper hover-image-animation" aria-label={post.data.title}>
         {processedImage ? (
             <figure>

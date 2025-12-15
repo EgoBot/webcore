@@ -7,25 +7,25 @@ const unique_topics = getUniqueTopicsWithCount(topics)
 const { globalSettings, t, total_posts } = Astro.props;
 ---
 
-<div class:list={['archive-s-outer', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-    <div class="s-gradient s-gradient-before"></div>
-    <archive-s data-current-="all-s">
-        <div class="button archive--button">
-            <input id="all-s" type="radio" name="archive-s" data-number={total_posts === 0 ? t.global.pagination.no_posts : total_posts === 1 ? t.global.pagination.one_post : `${total_posts} ${t.global.pagination.multiple_posts}`} checked/>
-            <label class="radio-button-text" for="all-s">
+<div class:list={['archive-topics-outer', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+    <div class="topics-gradient topics-gradient-before"></div>
+    <archive-topics data-current-topic="all-topics">
+        <div class="button archive-topic-button">
+            <input id="all-topics" type="radio" name="archive-topics" data-number={total_posts === 0 ? t.global.pagination.no_posts : total_posts === 1 ? t.global.pagination.one_post : `${total_posts} ${t.global.pagination.multiple_posts}`} checked/>
+            <label class="radio-button-text" for="all-topics">
                 {t.archive_page.all_topics} ({total_posts})
             </label>
         </div>
 
         {
             unique_topics.map((topic) =>
-                <div class="button archive--button">
-                    <input id={topic.slug} type="radio" name="archive-s" data-number={topic.count === 0 ? t.global.pagination.no_posts : topic.count === 1 ? t.global.pagination.one_post : `${topic.count} ${t.global.pagination.multiple_posts}`}/>
+                <div class="button archive-topic-button">
+                    <input id={topic.slug} type="radio" name="archive-topics" data-number={topic.count === 0 ? t.global.pagination.no_posts : topic.count === 1 ? t.global.pagination.one_post : `${topic.count} ${t.global.pagination.multiple_posts}`}/>
                     <label class="radio-button-text" for={topic.slug}>
                         {topic.original} ({topic.count})
                     </label>
                 </div>
             )
-        }     
-    </archive-s>
+        }
+    </archive-topics>
 </div>
