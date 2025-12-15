@@ -13,7 +13,7 @@ const { globalSettings, t, total_posts } = Astro.props;
         <div class="button archive-tag-button">
             <input id="all-tags" type="radio" name="archive-tags" data-number={total_posts === 0 ? t.global.pagination.no_posts : total_posts === 1 ? t.global.pagination.one_post : `${total_posts} ${t.global.pagination.multiple_posts}`} checked/>
             <label class="radio-button-text" for="all-tags">
-                {t.archive_page.all_tags} ({total_posts})
+                {t.archive_page.all_topics} ({total_posts})
             </label>
         </div>
 

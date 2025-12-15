@@ -33,7 +33,7 @@ const processedImage = resolveImagePath(post.data.feature_image);
 
             <div class="tags-wrapper dark">
                 {tags.map(tag => (                                           
-                    <a href={`/tags/${tag.slug}`} class="bracket-button">
+                    <a href={`/topics/${tag.slug}`} class="bracket-button">
                         <div class="medium-text left-bracket">{t.global.bracket}</div>
                         <div class="bracket-button-text">
                             <div class="medium-text main">{tag.name}</div>

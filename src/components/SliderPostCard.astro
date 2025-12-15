@@ -62,7 +62,7 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
                     {showTags && tags.length > 0 && (
                         <div class="tags-wrapper slide-ease-in-animation">
                            {tags.map(tag => (
-                                <a href={`/tags/${tag.slug}`} class="bracket-button">
+                                <a href={`/topics/${tag.slug}`} class="bracket-button">
                                     <div class="medium-text left-bracket">{t.global.bracket}</div>
                                     <div class="bracket-button-text">
                                         <div class="medium-text main">{tag.name}</div>

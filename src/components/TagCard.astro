@@ -16,7 +16,7 @@ const feature_image = getImage({glob: images, folder_name: "", image_name: url }
 ---
 
 <div class="card tag-card">
-    <a href={`/tags/${url}/`} class="card-image-wrapper hover-image-animation" aria-label={name}>
+    <a href={`/topics/${url}/`} class="card-image-wrapper hover-image-animation" aria-label={name}>
         {feature_image ? (
             <figure>
                 <Image
@@ -41,7 +41,7 @@ const feature_image = getImage({glob: images, folder_name: "", image_name: url }
         <div class="card-title-and-circle-wrapper">
             <div class="card-circle"></div>
             <div class="card-title-wrapper">
-                <a href={`/tags/${url}/`} class="medium-text card-text">
+                <a href={`/topics/${url}/`} class="medium-text card-text">
                     {name}
                 </a>
             </div>
