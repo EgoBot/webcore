@@ -90,7 +90,7 @@ const processedImage = resource.featuredImage
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10 13L6 9L7.4 7.55L9 9.15V3H11V9.15L12.6 7.55L14 9L10 13ZM5 17C4.45 17 3.979 16.804 3.587 16.412C3.195 16.020 2.99934 15.5493 3 15V12H5V15H15V12H17V15C17 15.55 16.804 16.021 16.412 16.413C16.020 16.805 15.5493 17.0007 15 17H5Z" fill="currentColor"/>
         </svg>
-        {resource.resourceType === 'link' ? 'Open Link' : `Download ${typeLabels[resource.resourceType]}`}
+        <span>{resource.resourceType === 'link' ? 'Open Link' : `Download ${typeLabels[resource.resourceType]}`}</span>
       </a>
     </div>
   </div>
@@ -227,10 +227,16 @@ const processedImage = resource.featuredImage
     border-radius: 0;
     font-weight: 500;
     text-decoration: none;
-    transition: opacity 0.2s ease;
+    transition: all 0.3s ease;
   }
 
-  .download-button:hover {
-    opacity: 0.85;
+  .download-button svg,
+  .download-button span {
+    transition: transform 0.3s ease;
+  }
+
+  .download-button:hover svg,
+  .download-button:hover span {
+    transform: scale(1.05);
   }
 </style>
