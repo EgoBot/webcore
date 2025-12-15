@@ -40,9 +40,9 @@ const showAuthorInfo = is_for_end_page && (showAuthorReadTime ?? false);
 
 const topics = (post.data.topics || [])
   .slice(0, 2)
-  .map(Name => ({
-    name: Name,
-    slug: slugify(Name)
+  .map(topicName => ({
+    name: topicName,
+    slug: slugify(topicName)
 }));
 
 const processedImage = resolveImagePath(post.data.feature_image);
@@ -66,8 +66,8 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
         <div class="hero-content">
             <div class="hero-content-inner">
                 <div class="hero-text-content">
-                    {shows && s.length > 0 && (
-                        <div class:list={['s-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                    {shows && topics.length > 0 && (
+                        <div class:list={['topics-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
                             {topics.map(topic => (
                                 <a href={`/topics/${topic.slug}`} class="bracket-button">
                                     <div class="medium-text left-bracket">{t.global.bracket}</div>

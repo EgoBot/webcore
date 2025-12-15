@@ -13,9 +13,9 @@ const formatted_date = formatDate(post.data.pub_date);
 
 const topics = (post.data.topics || [])
   .slice(0, 2)
-  .map(Name => ({
-    name: Name,
-    slug: slugify(Name)
+  .map(topicName => ({
+    name: topicName,
+    slug: slugify(topicName)
 }));
 
 const authors = (post.data.authors || []).map(authorName => ({
@@ -31,7 +31,7 @@ const processedImage = resolveImagePath(post.data.feature_image);
         <div class="featured-post-top">
             <div class="horizontal-line"></div>
 
-            <div class="s-wrapper dark">
+            <div class="topics-wrapper dark">
                 {topics.map(topic => (                                           
                     <a href={`/topics/${topic.slug}`} class="bracket-button">
                         <div class="medium-text left-bracket">{t.global.bracket}</div>
