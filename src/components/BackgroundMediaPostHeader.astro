@@ -45,6 +45,24 @@ const topics = (post.data.topics || [])
     slug: slugify(topicName)
 }));
 
+// DEBUG: Log all flags and data
+console.log('=== BACKGROUND MEDIA POST HEADER DEBUG ===');
+console.log('First post:', first_post);
+console.log('First post data keys:', Object.keys(first_post.data));
+console.log('show_topics_on_home value:', first_post.data.show_topics_on_home);
+console.log('Post ID:', post.id);
+console.log('Post Title:', post.data.title);
+console.log('show_topics_on_home:', post.data.show_topics_on_home);
+console.log('show_read_story_link:', post.data.show_read_story_link);
+console.log('show_excerpt_on_home:', post.data.show_excerpt_on_home);
+console.log('topics array:', post.data.topics);
+console.log('topics (mapped):', topics);
+console.log('shows variable:', shows);
+console.log('showReadStoryLink:', showReadStoryLink);
+console.log('showExcerpt:', showExcerpt);
+console.log('Condition (shows && topics.length > 0):', shows && topics.length > 0);
+console.log('==========================================');
+
 const processedImage = resolveImagePath(post.data.feature_image);
 
 const video_glob = import.meta.glob('@assets/*.{mp4,webm,mov}', { eager: true });
