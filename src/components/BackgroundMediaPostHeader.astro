@@ -18,8 +18,30 @@ const {
     button_style = globalSettings.button_style_on_background_media,
     post,
     is_for_end_page = false,
-    minutes_read
+    minutes_read,
+    showTagsOnPost,
+    showAuthorReadTime
 } = Astro.props as BackgroundMediaPostHeaderProps;
+
+// Display settings with defaults
+// Use post page settings if this is for end page, otherwise home page settings
+const displaySettings = is_for_end_page
+  ? {} // Post page settings passed as props
+  : (post.data.display_settings?.home_page || {});
+
+const showTags = is_for_end_page
+  ? (showTagsOnPost ?? false)
+  : (displaySettings.show_tags ?? false);
+
+const showReadStoryLink = is_for_end_page
+  ? false // Never show read story link on post page
+  : (displaySettings.show_read_story_link ?? false);
+
+const showExcerpt = is_for_end_page
+  ? true // Always show excerpt on post page (controlled by PostAuthors component)
+  : (displaySettings.show_excerpt ?? true);
+
+const showAuthorInfo = is_for_end_page && (showAuthorReadTime ?? false);
 
 const tags = (post.data.tags || [])
   .slice(0, 2)
@@ -49,18 +71,20 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
         <div class="hero-content">
             <div class="hero-content-inner">
                 <div class="hero-text-content">
-                    <div class:list={['tags-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-                        {tags.map(tag => (                                           
-                            <a href={`/tags/${tag.slug}`} class="bracket-button">
-                                <div class="medium-text left-bracket">{t.global.bracket}</div>
-                                <div class="bracket-button-text">
-                                    <div class="medium-text main">{tag.name}</div>
-                                    <div class="medium-text absolute">{tag.name}</div>
-                                </div>
-                                <div class="medium-text right-bracket">{t.global.bracket}</div>
-                            </a>
-                        ))}
-                    </div>
+                    {showTags && tags.length > 0 && (
+                        <div class:list={['tags-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                            {tags.map(tag => (
+                                <a href={`/tags/${tag.slug}`} class="bracket-button">
+                                    <div class="medium-text left-bracket">{t.global.bracket}</div>
+                                    <div class="bracket-button-text">
+                                        <div class="medium-text main">{tag.name}</div>
+                                        <div class="medium-text absolute">{tag.name}</div>
+                                    </div>
+                                    <div class="medium-text right-bracket">{t.global.bracket}</div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
 
                     {is_for_end_page ? (
                         <div class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
@@ -68,30 +92,36 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
                         </div>
 
                         <div class:list={['excerpt-and-authors', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-                            <div class="post-summary-wrapper">
-                                <p class="paragraph overlay">{post.data.excerpt}</p>
-                            </div>
+                            {showExcerpt && post.data.excerpt && (
+                                <div class="post-summary-wrapper">
+                                    <p class="paragraph overlay">{post.data.excerpt}</p>
+                                </div>
+                            )}
 
-                            <PostAuthors post={post} minutes_read={minutes_read}/>
+                            {showAuthorInfo && (
+                                <PostAuthors post={post} minutes_read={minutes_read}/>
+                            )}
                         </div>
                     ) : (
                         <a href={`/blog/${post.id}`} class:list={['heading-1-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]} data-content-length={content_length}>
                             <h1>{post.data.title}</h1>
                         </a>
 
-                        <div class:list={['post-summary-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-                            <p class="paragraph overlay">{post.data.excerpt}</p>
-                        </div>
+                        {showExcerpt && post.data.excerpt && (
+                            <div class:list={['post-summary-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                                <p class="paragraph overlay">{post.data.excerpt}</p>
+                            </div>
+                        )}
                     )}
                 </div>
-                
+
                 {is_for_end_page ? (
                     <></>
-                ) : (
+                ) : showReadStoryLink ? (
                     <div class:list={['', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
                         <Button t={t} text={t.global.read_story} button_style={button_style} url={`/blog/${post.id}`}/>
                     </div>
-                )}
+                ) : null}
             </div>
         </div>
     </div>

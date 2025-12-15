@@ -20,6 +20,12 @@ const { post, previous_post, next_post, minutes_read } = Astro.props as PostProp
 
 const { title, excerpt, feature_image, feature_video, post_header_type, post_template: post_template_data } = post.data;
 
+// Display settings with defaults for post page
+const postPageSettings = post.data.display_settings?.post_page || {};
+const showTagsOnPost = postPageSettings.show_tags ?? false; // default off
+const showAuthorReadTime = postPageSettings.show_author_read_time ?? false; // default off
+const showPrevNext = postPageSettings.show_prev_next ?? false; // default off
+
 const post_header_type_global = globalSettings.post_header_type;
 const post_header = post_header_type ?? post_header_type_global;
 
@@ -52,11 +58,11 @@ if(post.data.tags && post.data.tags.length > 0){
   >
     <article class="article" data-is-post="true" data-post-header-type={post_header} data-has-featured-image={feature_image ? "true" : "false"} 
       data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true">        
-        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ? 
+        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ?
           (
-            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={post} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true} minutes_read={minutes_read}/>
+            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={post} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true} minutes_read={minutes_read} showTagsOnPost={showTagsOnPost} showAuthorReadTime={showAuthorReadTime}/>
           ) : (
-            <DefaultPostHeader globalSettings={globalSettings} t={t} post={post} minutes_read={minutes_read} post_header={post_header} post_template={post_template}/>
+            <DefaultPostHeader globalSettings={globalSettings} t={t} post={post} minutes_read={minutes_read} post_header={post_header} post_template={post_template} showTagsOnPost={showTagsOnPost} showAuthorReadTime={showAuthorReadTime}/>
           )
         }
 
@@ -123,33 +129,35 @@ if(post.data.tags && post.data.tags.length > 0){
       </div>
 
       <footer class:list={['article-footer', { 'right-aligned-post-content': post_template === "Right Aligned" }]}>
-        <div class="related-posts last-section narrow-container">
-          <div class="related-post-wrapper">
-            {previous_post && 
-              <a href={`/blog/${previous_post.id}`} class="related-post">
-                <span class="related-post-arrow flex-center rotated">
-                  <SmallArrowIcon />
-                </span>
-                <p>
-                  {t.post.previous_post}
-                </p>                          
-              </a>
-            }
-          </div>
+        {showPrevNext && (previous_post || next_post) && (
+          <div class="related-posts last-section narrow-container">
+            <div class="related-post-wrapper">
+              {previous_post &&
+                <a href={`/blog/${previous_post.id}`} class="related-post">
+                  <span class="related-post-arrow flex-center rotated">
+                    <SmallArrowIcon />
+                  </span>
+                  <p>
+                    {t.post.previous_post}
+                  </p>
+                </a>
+              }
+            </div>
 
-          <div class="related-post-wrapper">
-            {next_post && 
-              <a href={`/blog/${next_post.id}`} class="related-post">
-                <p>
-                  {t.post.next_post}
-                </p>  
-                <span class="related-post-arrow flex-center">
-                  <SmallArrowIcon />
-                </span>                        
-              </a>
-            }
-          </div>             
-        </div>
+            <div class="related-post-wrapper">
+              {next_post &&
+                <a href={`/blog/${next_post.id}`} class="related-post">
+                  <p>
+                    {t.post.next_post}
+                  </p>
+                  <span class="related-post-arrow flex-center">
+                    <SmallArrowIcon />
+                  </span>
+                </a>
+              }
+            </div>
+          </div>
+        )}
       </footer>
     </article>
   </main>

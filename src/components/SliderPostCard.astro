@@ -18,6 +18,12 @@ const {
     post
 } = Astro.props as SliderPostCardProps;
 
+// Display settings with defaults
+const displaySettings = post.data.display_settings?.home_page || {};
+const showTags = displaySettings.show_tags ?? false; // default off
+const showReadStoryLink = displaySettings.show_read_story_link ?? false; // default off
+const showExcerpt = displaySettings.show_excerpt ?? true; // default on
+
 const tags = (post.data.tags || [])
   .slice(0, 2)
   .map(tagName => ({
@@ -54,28 +60,34 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
         <div class="hero-content">
             <div class="hero-content-inner">
                 <div class="hero-text-content">
-                    <div class="tags-wrapper slide-ease-in-animation">
-                       {tags.map(tag => (                                           
-                            <a href={`/tags/${tag.slug}`} class="bracket-button">
-                                <div class="medium-text left-bracket">{t.global.bracket}</div>
-                                <div class="bracket-button-text">
-                                    <div class="medium-text main">{tag.name}</div>
-                                    <div class="medium-text absolute">{tag.name}</div>
-                                </div>
-                                <div class="medium-text right-bracket">{t.global.bracket}</div>
-                            </a>
-                        ))}
-                    </div>
+                    {showTags && tags.length > 0 && (
+                        <div class="tags-wrapper slide-ease-in-animation">
+                           {tags.map(tag => (
+                                <a href={`/tags/${tag.slug}`} class="bracket-button">
+                                    <div class="medium-text left-bracket">{t.global.bracket}</div>
+                                    <div class="bracket-button-text">
+                                        <div class="medium-text main">{tag.name}</div>
+                                        <div class="medium-text absolute">{tag.name}</div>
+                                    </div>
+                                    <div class="medium-text right-bracket">{t.global.bracket}</div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
                     <a href={`/blog/${post.id}`} class="heading-1-wrapper slide-ease-in-animation" data-content-length={content_length}>
                         <h1>{post.data.title}</h1>
                     </a>
 
-                    <div class="post-summary-wrapper slide-ease-in-animation">
-                        <p class="paragraph overlay">{post.data.excerpt}</p>
-                    </div>
+                    {showExcerpt && post.data.excerpt && (
+                        <div class="post-summary-wrapper slide-ease-in-animation">
+                            <p class="paragraph overlay">{post.data.excerpt}</p>
+                        </div>
+                    )}
                 </div>
-                
-                <Button t={t} text={t.global.read_story} button_style={button_style} classname="slide-ease-in-animation" url={`/blog/${post.id}`}/>
+
+                {showReadStoryLink && (
+                    <Button t={t} text={t.global.read_story} button_style={button_style} classname="slide-ease-in-animation" url={`/blog/${post.id}`}/>
+                )}
             </div>
         </div>
     </div>
