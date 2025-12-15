@@ -19,10 +19,9 @@ const {
 } = Astro.props as SliderPostCardProps;
 
 // Display settings with defaults
-const displaySettings = post.data.display_settings?.home_page || {};
-const showTags = displaySettings.show_tags ?? false; // default off
-const showReadStoryLink = displaySettings.show_read_story_link ?? false; // default off
-const showExcerpt = displaySettings.show_excerpt ?? true; // default on
+const showTags = post.data.show_tags_on_home ?? false; // default off
+const showReadStoryLink = post.data.show_read_story_link ?? false; // default off
+const showExcerpt = post.data.show_excerpt_on_home ?? true; // default on
 
 const tags = (post.data.tags || [])
   .slice(0, 2)

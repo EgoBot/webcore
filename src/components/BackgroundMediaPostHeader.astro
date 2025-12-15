@@ -24,22 +24,17 @@ const {
 } = Astro.props as BackgroundMediaPostHeaderProps;
 
 // Display settings with defaults
-// Use post page settings if this is for end page, otherwise home page settings
-const displaySettings = is_for_end_page
-  ? {} // Post page settings passed as props
-  : (post.data.display_settings?.home_page || {});
-
 const showTags = is_for_end_page
   ? (showTagsOnPost ?? false)
-  : (displaySettings.show_tags ?? false);
+  : (post.data.show_tags_on_home ?? false);
 
 const showReadStoryLink = is_for_end_page
   ? false // Never show read story link on post page
-  : (displaySettings.show_read_story_link ?? false);
+  : (post.data.show_read_story_link ?? false);
 
 const showExcerpt = is_for_end_page
   ? true // Always show excerpt on post page (controlled by PostAuthors component)
-  : (displaySettings.show_excerpt ?? true);
+  : (post.data.show_excerpt_on_home ?? true);
 
 const showAuthorInfo = is_for_end_page && (showAuthorReadTime ?? false);
 
