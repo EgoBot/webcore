@@ -96,17 +96,17 @@ export function getUniqueTopicsWithCount(topics: Array<{original: string; slug: 
 }
 
 /**
- * Get posts filtered by 
- * @param  -  slug to filter by
+ * Get posts filtered by tag/topic
+ * @param tag - Tag slug to filter by
  * @param limit - Maximum number of posts to return
  * @returns Object with filtered posts array and total count
  */
-export async function getPostsBy({
-  ,
+export async function getPostsByTag({
+  tag,
   limit,
-}: { ?: string; limit?: number } = {}) {
+}: { tag?: string; limit?: number } = {}) {
   const posts = await getCollection("blog", ({ data }) => {
-    const normalized =  ? .toLowerCase() : null;
+    const normalized = tag ? tag.toLowerCase() : null;
 
     return !data.draft && (
       !normalized || (data.topics && data.topics.some(post => post.toLowerCase() === normalized))
@@ -132,7 +132,7 @@ export async function getAuthors() {
 
   const authors = posts.flatMap(post => post.data.authors ?? []).filter(author => author !== undefined && author !== null);
 
-  const Data = [
+  const authorData = [
     ...new Set(
       authors.map(author => ({
         original: author,
@@ -141,7 +141,7 @@ export async function getAuthors() {
     ),
   ];
 
-  return Data;
+  return authorData;
 }
 
 /**
