@@ -1,0 +1,192 @@
+---
+import { Image } from "astro:assets";
+import { resolveImagePath } from "../../utils/assets.ts";
+
+interface Props {
+  resource: {
+    title: string;
+    slug: string;
+    description: string;
+    resourceType: string;
+    category: string;
+    featuredImage?: string;
+    fileUrl: string;
+    featured?: boolean;
+  };
+  t: any;
+}
+
+const { resource, t } = Astro.props;
+
+const typeIcons = {
+  pdf: "📄",
+  audio: "🎧",
+  video: "🎥",
+  link: "🔗",
+};
+
+const typeLabels = {
+  pdf: "PDF",
+  audio: "Audio",
+  video: "Video",
+  link: "Link",
+};
+
+const processedImage = resource.featuredImage
+  ? resolveImagePath(resource.featuredImage)
+  : null;
+---
+
+<article class="resource-card">
+  {resource.featured && (
+    <div class="featured-badge">Featured</div>
+  )}
+
+  {processedImage && (
+    <div class="resource-image">
+      <Image
+        src={processedImage}
+        alt={resource.title}
+        inferSize={true}
+        loading="lazy"
+        format="webp"
+      />
+    </div>
+  )}
+
+  <div class="resource-content">
+    <div class="resource-meta">
+      <span class="resource-type">
+        <span class="type-icon">{typeIcons[resource.resourceType]}</span>
+        <span class="type-label">{typeLabels[resource.resourceType]}</span>
+      </span>
+      <span class="resource-category">{resource.category}</span>
+    </div>
+
+    <h3 class="resource-title">{resource.title}</h3>
+    <p class="resource-description">{resource.description}</p>
+
+    <div class="resource-actions">
+      <a
+        href={resource.fileUrl}
+        download={resource.resourceType === 'pdf' || resource.resourceType === 'audio'}
+        target={resource.resourceType === 'link' ? '_blank' : undefined}
+        rel={resource.resourceType === 'link' ? 'noopener noreferrer' : undefined}
+        class="download-button"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 13L6 9L7.4 7.55L9 9.15V3H11V9.15L12.6 7.55L14 9L10 13ZM5 17C4.45 17 3.979 16.804 3.587 16.412C3.195 16.020 2.99934 15.5493 3 15V12H5V15H15V12H17V15C17 15.55 16.804 16.021 16.412 16.413C16.020 16.805 15.5493 17.0007 15 17H5Z" fill="currentColor"/>
+        </svg>
+        {resource.resourceType === 'link' ? 'Open Link' : `Download ${typeLabels[resource.resourceType]}`}
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .resource-card {
+    background: var(--color-card-bg, #ffffff);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid var(--color-border, #e5e7eb);
+  }
+
+  .resource-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--color-accent, #6366f1);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 1;
+  }
+
+  .resource-image {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--color-surface, #f9fafb);
+  }
+
+  .resource-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .resource-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resource-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .resource-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .type-icon {
+    font-size: 1.25rem;
+  }
+
+  .resource-category {
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .resource-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    color: var(--color-text, #111827);
+  }
+
+  .resource-description {
+    color: var(--color-text-secondary, #4b5563);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex: 1;
+  }
+
+  .resource-actions {
+    margin-top: auto;
+  }
+
+  .download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary, #000000);
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .download-button:hover {
+    background: var(--color-primary-dark, #1f2937);
+  }
+</style>

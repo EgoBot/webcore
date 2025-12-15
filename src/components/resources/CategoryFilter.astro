@@ -1,0 +1,57 @@
+---
+interface Props {
+  categories: string[];
+  currentCategory?: string;
+}
+
+const { categories, currentCategory } = Astro.props;
+---
+
+<div class="category-filter">
+  <a
+    href="/resources"
+    class:list={["filter-chip", { active: !currentCategory }]}
+  >
+    All Resources
+  </a>
+
+  {categories.map(category => (
+    <a
+      href={`/resources?category=${encodeURIComponent(category)}`}
+      class:list={["filter-chip", { active: currentCategory === category }]}
+    >
+      {category}
+    </a>
+  ))}
+</div>
+
+<style>
+  .category-filter {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .filter-chip {
+    padding: 0.5rem 1rem;
+    border-radius: 24px;
+    border: 2px solid var(--color-border, #e5e7eb);
+    background: white;
+    color: var(--color-text, #111827);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .filter-chip:hover {
+    border-color: var(--color-primary, #000000);
+    background: var(--color-primary-light, #f3f4f6);
+  }
+
+  .filter-chip.active {
+    background: var(--color-primary, #000000);
+    color: white;
+    border-color: var(--color-primary, #000000);
+  }
+</style>
