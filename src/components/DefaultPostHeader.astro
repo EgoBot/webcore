@@ -23,7 +23,7 @@ const {
 const showTags = showTagsOnPost ?? false;
 const showAuthorInfo = showAuthorReadTime ?? false;
 
-const tags = (post.data.topics || [])
+const topics = (post.data.topics || [])
   .slice(0, 2)
   .map(tagName => ({
     name: tagName,
@@ -71,12 +71,12 @@ if(post_header == "Narrow" || post_header == "Narrow Centered"){
             <div class="secondary-heading-wrapper">
                 {showTags && tags.length > 0 && (
                     <div class:list={['tags-wrapper dark', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
-                        {tags.map(tag => (
-                            <a href={`/topics/${tag.slug}`} class="bracket-button">
+                        {topics.map(topic => (
+                            <a href={`/topics/${topic.slug}`} class="bracket-button">
                                 <div class="medium-text left-bracket">{t.global.bracket}</div>
                                 <div class="bracket-button-text">
-                                    <div class="medium-text main">{tag.name}</div>
-                                    <div class="medium-text absolute">{tag.name}</div>
+                                    <div class="medium-text main">{topic.name}</div>
+                                    <div class="medium-text absolute">{topic.name}</div>
                                 </div>
                                 <div class="medium-text right-bracket">{t.global.bracket}</div>
                             </a>

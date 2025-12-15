@@ -1,0 +1,58 @@
+---
+import Placeholder from "../assets/icons/Placeholder.astro";
+import type { TopicCardProps } from "@src-types/types";
+import { Image } from "astro:assets";
+import { getImage } from "../utils/assets.ts";
+
+import "@styles/post-card.css";
+
+// Get topic image from assets. Name them the same as topic slug.
+const images = import.meta.glob<{ default: string }>('@assets/*.{jpg,jpeg,png,webp,gif,svg}', { eager: true });
+
+const { name, url, post_count } = Astro.props as TopicCardProps;
+const t = Astro.props.t;
+
+const feature_image = getImage({glob: images, folder_name: "", image_name: url });
+---
+
+<div class="card tag-card">
+    <a href={`/topics/${url}/`} class="card-image-wrapper hover-image-animation" aria-label={name}>
+        {feature_image ? (
+            <figure>
+                <Image
+                    class="card-image-inner"
+                    src={feature_image}
+                    alt={name}
+                    inferSize={true}
+                    loading="lazy"
+                    format="webp"
+                    widths={[100, 200, 300, 400, 600, 800, 1000, 1200]}
+                    sizes="(max-width: 767px) calc(50vw - 54px), (max-width: 1080px) calc(50vw - 82px), 25vw"
+                />
+            </figure>
+        ) : (
+            <div class="placeholder flex-center">
+                <Placeholder/>
+            </div>
+        )} 
+    </a>
+
+    <div class="card-content">
+        <div class="card-title-and-circle-wrapper">
+            <div class="card-circle"></div>
+            <div class="card-title-wrapper">
+                <a href={`/topics/${url}/`} class="medium-text card-text">
+                    {name}
+                </a>
+            </div>
+        </div>
+
+        {post_count &&
+            <div class="card-small-text">
+                <p class="paragraph">
+                    {post_count === 0 ? t.global.pagination.no_posts : post_count === 1 ? t.global.pagination.one_post : `${post_count} ${t.global.pagination.multiple_posts}`}
+                </p>
+            </div>
+        }
+    </div>
+</div>

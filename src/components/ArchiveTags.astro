@@ -1,8 +1,8 @@
 ---
-import { getTags, getUniqueTagsWithCount } from "../utils/content.ts";
+import { getTopics, getUniqueTopicsWithCount } from "../utils/content.ts";
 
-const tags = await getTags();
-const unique_tags = getUniqueTagsWithCount(tags)
+const topics = await getTopics();
+const unique_topics = getUniqueTopicsWithCount(topics)
 
 const { globalSettings, t, total_posts } = Astro.props;
 ---
@@ -18,13 +18,13 @@ const { globalSettings, t, total_posts } = Astro.props;
         </div>
 
         {
-            unique_tags.map((tag) =>
+            unique_topics.map((topic) =>
                 <div class="button archive-tag-button">
-                    <input id={tag.slug} type="radio" name="archive-tags" data-number={tag.count === 0 ? t.global.pagination.no_posts : tag.count === 1 ? t.global.pagination.one_post : `${tag.count} ${t.global.pagination.multiple_posts}`}/>
-                    <label class="radio-button-text" for={tag.slug}>
-                        {tag.original} ({tag.count})
+                    <input id={topic.slug} type="radio" name="archive-tags" data-number={topic.count === 0 ? t.global.pagination.no_posts : topic.count === 1 ? t.global.pagination.one_post : `${topic.count} ${t.global.pagination.multiple_posts}`}/>
+                    <label class="radio-button-text" for={topic.slug}>
+                        {topic.original} ({topic.count})
                     </label>
-                </div>     
+                </div>
             )
         }     
     </archive-tags>

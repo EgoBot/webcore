@@ -56,43 +56,43 @@ export function getPostWithSiblings(posts: CollectionEntry<"blog">[], index: num
 }
 
 /**
- * Get all unique tags from posts
- * @returns Array of tag objects with original text and slug
+ * Get all unique topics from posts
+ * @returns Array of topic objects with original text and slug
  */
-export async function getTags() {
+export async function getTopics() {
   const { posts } = await getSortedPosts();
 
-  const tags = posts.flatMap(post => post.data.topics ?? []).filter(tag => tag !== undefined && tag !== null);
+  const topics = posts.flatMap(post => post.data.topics ?? []).filter(topic => topic !== undefined && topic !== null);
 
-  const tagData = [
+  const topicData = [
     ...new Set(
-      tags.map(tag => ({
-        original: tag,
-        slug: slugify(tag),
+      topics.map(topic => ({
+        original: topic,
+        slug: slugify(topic),
       }))
     ),
   ];
 
-  return tagData;
+  return topicData;
 }
 
 /**
- * Count occurrences of each unique tag
- * @param tags - Array of tag objects
- * @returns Array of tags with count property, sorted alphabetically
+ * Count occurrences of each unique topic
+ * @param topics - Array of topic objects
+ * @returns Array of topics with count property, sorted alphabetically
  */
-export function getUniqueTagsWithCount(tags: Array<{original: string; slug: string}>) {
-  const tagMap = new Map();
+export function getUniqueTopicsWithCount(topics: Array<{original: string; slug: string}>) {
+  const topicMap = new Map();
 
-  tags.forEach(({ original, slug }) => {
-    if (tagMap.has(slug)) {
-      tagMap.get(slug).count += 1;
+  topics.forEach(({ original, slug }) => {
+    if (topicMap.has(slug)) {
+      topicMap.get(slug).count += 1;
     } else {
-      tagMap.set(slug, { original, slug, count: 1 });
+      topicMap.set(slug, { original, slug, count: 1 });
     }
   });
 
-  return Array.from(tagMap.values()).sort((a, b) => a.original.localeCompare(b.original));
+  return Array.from(topicMap.values()).sort((a, b) => a.original.localeCompare(b.original));
 }
 
 /**
