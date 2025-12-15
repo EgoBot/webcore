@@ -15,7 +15,7 @@ const t = Astro.props.t;
 const feature_image = getImage({glob: images, folder_name: "", image_name: url });
 ---
 
-<div class="card tag-card">
+<div class="card topic-card">
     <a href={`/topics/${url}/`} class="card-image-wrapper hover-image-animation" aria-label={name}>
         {feature_image ? (
             <figure>

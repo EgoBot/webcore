@@ -21,7 +21,7 @@ const { post, previous_post, next_post, minutes_read } = Astro.props as PostProp
 const { title, excerpt, feature_image, feature_video, post_header_type, post_template: post_template_data } = post.data;
 
 // Display settings with defaults for post page
-const showTagsOnPost = post.data.show_topics_on_post ?? false; // default off
+const showsOnPost = post.data.show_topics_on_post ?? false; // default off
 const showAuthorReadTime = post.data.show_author_read_time ?? false; // default off
 const showPrevNext = post.data.show_prev_next ?? false; // default off
 
@@ -36,11 +36,11 @@ const feature_media = feature_image || feature_video;
 const currentUrl = Astro.request.url;
 const encodedTitle = encodeURIComponent(title);
 
-let tag_slug, tag_name;
+let _slug, _name;
 
 if(post.data.topics && post.data.topics.length > 0){
-    tag_name = post.data.topics[0];
-    tag_slug = slugify(tag_name)
+    _name = post.data.topics[0];
+    _slug = slugify(_name)
 }
 ---
 
@@ -59,9 +59,9 @@ if(post.data.topics && post.data.topics.length > 0){
       data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true">        
         {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ?
           (
-            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={post} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true} minutes_read={minutes_read} showTagsOnPost={showTagsOnPost} showAuthorReadTime={showAuthorReadTime}/>
+            <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={post} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true} minutes_read={minutes_read} showsOnPost={showsOnPost} showAuthorReadTime={showAuthorReadTime}/>
           ) : (
-            <DefaultPostHeader globalSettings={globalSettings} t={t} post={post} minutes_read={minutes_read} post_header={post_header} post_template={post_template} showTagsOnPost={showTagsOnPost} showAuthorReadTime={showAuthorReadTime}/>
+            <DefaultPostHeader globalSettings={globalSettings} t={t} post={post} minutes_read={minutes_read} post_header={post_header} post_template={post_template} showsOnPost={showsOnPost} showAuthorReadTime={showAuthorReadTime}/>
           )
         }
 

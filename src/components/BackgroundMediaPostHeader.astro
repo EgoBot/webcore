@@ -19,13 +19,13 @@ const {
     post,
     is_for_end_page = false,
     minutes_read,
-    showTagsOnPost,
+    showsOnPost,
     showAuthorReadTime
 } = Astro.props as BackgroundMediaPostHeaderProps;
 
 // Display settings with defaults
-const showTags = is_for_end_page
-  ? (showTagsOnPost ?? false)
+const shows = is_for_end_page
+  ? (showsOnPost ?? false)
   : (post.data.show_topics_on_home ?? false);
 
 const showReadStoryLink = is_for_end_page
@@ -40,9 +40,9 @@ const showAuthorInfo = is_for_end_page && (showAuthorReadTime ?? false);
 
 const topics = (post.data.topics || [])
   .slice(0, 2)
-  .map(tagName => ({
-    name: tagName,
-    slug: slugify(tagName)
+  .map(Name => ({
+    name: Name,
+    slug: slugify(Name)
 }));
 
 const processedImage = resolveImagePath(post.data.feature_image);
@@ -66,8 +66,8 @@ const feature_video = feature_video_item ? (feature_video_item[1] as any).defaul
         <div class="hero-content">
             <div class="hero-content-inner">
                 <div class="hero-text-content">
-                    {showTags && tags.length > 0 && (
-                        <div class:list={['tags-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                    {shows && s.length > 0 && (
+                        <div class:list={['s-wrapper', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
                             {topics.map(topic => (
                                 <a href={`/topics/${topic.slug}`} class="bracket-button">
                                     <div class="medium-text left-bracket">{t.global.bracket}</div>

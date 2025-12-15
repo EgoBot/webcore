@@ -15,19 +15,19 @@ const {
     minutes_read,
     post_template = "Right Aligned",
     post_header = "Wide",
-    showTagsOnPost,
+    showsOnPost,
     showAuthorReadTime
 } = Astro.props as DefaultPostHeaderProps;
 
 // These props are only passed when used as post page header
-const showTags = showTagsOnPost ?? false;
+const shows = showsOnPost ?? false;
 const showAuthorInfo = showAuthorReadTime ?? false;
 
 const topics = (post.data.topics || [])
   .slice(0, 2)
-  .map(tagName => ({
-    name: tagName,
-    slug: slugify(tagName)
+  .map(Name => ({
+    name: Name,
+    slug: slugify(Name)
 }));
 
 const processedImage = resolveImagePath(post.data.feature_image);
@@ -69,8 +69,8 @@ if(post_header == "Narrow" || post_header == "Narrow Centered"){
         >         
         <div class="secondary-hero-content">
             <div class="secondary-heading-wrapper">
-                {showTags && tags.length > 0 && (
-                    <div class:list={['tags-wrapper dark', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
+                {shows && s.length > 0 && (
+                    <div class:list={['s-wrapper dark', { 'ease-in-animation': globalSettings.use_page_load_animations }]}>
                         {topics.map(topic => (
                             <a href={`/topics/${topic.slug}`} class="bracket-button">
                                 <div class="medium-text left-bracket">{t.global.bracket}</div>
