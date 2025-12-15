@@ -96,17 +96,17 @@ export function getUniqueTopicsWithCount(topics: Array<{original: string; slug: 
 }
 
 /**
- * Get posts filtered by tag/topic
- * @param tag - Tag slug to filter by
+ * Get posts filtered by topic
+ * @param topic - Topic slug to filter by
  * @param limit - Maximum number of posts to return
  * @returns Object with filtered posts array and total count
  */
-export async function getPostsByTag({
-  tag,
+export async function getPostsByTopic({
+  topic,
   limit,
-}: { tag?: string; limit?: number } = {}) {
+}: { topic?: string; limit?: number } = {}) {
   const posts = await getCollection("blog", ({ data }) => {
-    const normalized = tag ? tag.toLowerCase() : null;
+    const normalized = topic ? topic.toLowerCase() : null;
 
     return !data.draft && (
       !normalized || (data.topics && data.topics.some(post => post.toLowerCase() === normalized))
