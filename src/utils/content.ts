@@ -13,15 +13,19 @@ import { slugify } from "./presentation";
  * @param limit - Maximum number of posts to return
  * @param featured - Only return featured posts
  * @param homepage_slider - Only return posts marked for homepage slider
+ * @param exclude_hidden - Exclude posts marked with hide_from_collections (default: true)
  * @returns Object with posts array and total count
  */
 export async function getSortedPosts({
   limit,
   featured = false,
-  homepage_slider = false
-}: { limit?: number; featured?: boolean; homepage_slider?: boolean } = {}) {
+  homepage_slider = false,
+  exclude_hidden = true
+}: { limit?: number; featured?: boolean; homepage_slider?: boolean; exclude_hidden?: boolean } = {}) {
   const posts = await getCollection("blog", ({ data }) => {
     if (data.draft) return false;
+
+    if (exclude_hidden && data.hide_from_collections) return false;
 
     if (featured && !data.featured) return false;
 
@@ -99,18 +103,21 @@ export function getUniqueTopicsWithCount(topics: Array<{original: string; slug: 
  * Get posts filtered by topic
  * @param topic - Topic slug to filter by
  * @param limit - Maximum number of posts to return
+ * @param exclude_hidden - Exclude posts marked with hide_from_collections (default: true)
  * @returns Object with filtered posts array and total count
  */
 export async function getPostsByTopic({
   topic,
   limit,
-}: { topic?: string; limit?: number } = {}) {
+  exclude_hidden = true,
+}: { topic?: string; limit?: number; exclude_hidden?: boolean } = {}) {
   const posts = await getCollection("blog", ({ data }) => {
+    if (data.draft) return false;
+    if (exclude_hidden && data.hide_from_collections) return false;
+
     const normalized = topic ? topic.toLowerCase() : null;
 
-    return !data.draft && (
-      !normalized || (data.topics && data.topics.some(post => post.toLowerCase() === normalized))
-    );
+    return !normalized || (data.topics && data.topics.some(post => post.toLowerCase() === normalized));
   });
 
   posts.sort((a, b) => new Date(b.data.pub_date).getTime() - new Date(a.data.pub_date).getTime());
@@ -148,18 +155,21 @@ export async function getAuthors() {
  * Get posts filtered by author
  * @param author - Author slug to filter by
  * @param limit - Maximum number of posts to return
+ * @param exclude_hidden - Exclude posts marked with hide_from_collections (default: true)
  * @returns Object with filtered posts array and total count
  */
 export async function getPostsByAuthor({
   author,
   limit,
-}: { author?: string; limit?: number } = {}) {
+  exclude_hidden = true,
+}: { author?: string; limit?: number; exclude_hidden?: boolean } = {}) {
   const posts = await getCollection("blog", ({ data }) => {
+    if (data.draft) return false;
+    if (exclude_hidden && data.hide_from_collections) return false;
+
     const normalizedAuthor = author ? author.toLowerCase() : null;
 
-    return !data.draft && (
-      !normalizedAuthor || (data.authors && data.authors.some(postAuthor => postAuthor.toLowerCase() === normalizedAuthor))
-    );
+    return !normalizedAuthor || (data.authors && data.authors.some(postAuthor => postAuthor.toLowerCase() === normalizedAuthor));
   });
 
   posts.sort((a, b) => new Date(b.data.pub_date).getTime() - new Date(a.data.pub_date).getTime());

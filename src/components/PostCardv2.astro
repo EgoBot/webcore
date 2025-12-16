@@ -1,0 +1,95 @@
+---
+import Placeholder from "../assets/icons/Placeholder.astro";
+import type { PostCardv2Props } from "@src-types/types";
+import { resolveImagePath } from "@utils/utils";
+import { Image } from "astro:assets";
+
+import "@styles/post-card-v2.css";
+// Note: CSS file should be at src/styles/post-card-v2.css in the consuming project
+
+const { post, t } = Astro.props as PostCardv2Props;
+
+const processedImage = resolveImagePath(post.data.feature_image);
+const featureVideo = post.data.feature_video;
+const overlayOpacity = post.data.overlay_opacity ?? 50;
+const postUrl = `/blog/${post.id}`;
+---
+
+<a href={postUrl} class="post-card-v2" aria-label={post.data.title}>
+    <div class="post-card-v2-media">
+        {featureVideo ? (
+            <video
+                class="post-card-v2-video"
+                src={featureVideo}
+                muted
+                loop
+                playsinline
+                preload="metadata"
+            />
+        ) : null}
+
+        {processedImage ? (
+            <figure class={`post-card-v2-image-wrapper ${featureVideo ? 'has-video' : ''} hover-image-animation`}>
+                <Image
+                    class="post-card-v2-image"
+                    src={processedImage}
+                    alt={post.data.title}
+                    inferSize={true}
+                    loading="lazy"
+                    format="webp"
+                    widths={[300, 400, 600, 800, 1000, 1200, 1600, 2000]}
+                    sizes="(max-width: 479px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                />
+            </figure>
+        ) : (
+            <div class="post-card-v2-placeholder flex-center">
+                <Placeholder/>
+            </div>
+        )}
+
+        <div class="post-card-v2-overlay" style={`--overlay-opacity: ${overlayOpacity / 100}`}></div>
+
+        <div class="post-card-v2-content">
+            <h3 class="post-card-v2-title">{post.data.title}</h3>
+            {post.data.excerpt && (
+                <p class="post-card-v2-excerpt">{post.data.excerpt}</p>
+            )}
+        </div>
+    </div>
+</a>
+
+<script>
+    function initPostCardv2() {
+        const cards = document.querySelectorAll('.post-card-v2');
+
+        cards.forEach(card => {
+            const video = card.querySelector('.post-card-v2-video') as HTMLVideoElement | null;
+            const imageWrapper = card.querySelector('.post-card-v2-image-wrapper') as HTMLElement | null;
+
+            if (video) {
+                card.addEventListener('mouseenter', () => {
+                    video.play().catch(() => {
+                        // Video play failed, likely due to autoplay restrictions
+                    });
+                    if (imageWrapper) {
+                        imageWrapper.style.opacity = '0';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                    if (imageWrapper) {
+                        imageWrapper.style.opacity = '1';
+                    }
+                });
+            }
+        });
+    }
+
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', initPostCardv2);
+
+    // Re-initialize on Astro page transitions
+    document.addEventListener('astro:page-load', initPostCardv2);
+</script>
