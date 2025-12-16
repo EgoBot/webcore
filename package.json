@@ -1,6 +1,6 @@
 {
   "name": "@egobot/webcore",
-  "version": "1.7.24",
+  "version": "1.7.25",
   "type": "module",
   "description": "Shared components and utilities for Odyssey Web sites",
   "exports": {
