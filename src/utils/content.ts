@@ -116,8 +116,7 @@ export async function getPostsByTopic({
     if (exclude_hidden && data.hide_from_collections) return false;
 
     const normalized = topic ? topic.toLowerCase() : null;
-
-    return !normalized || (data.topics && data.topics.some(post => post.toLowerCase() === normalized));
+    return !normalized || (data.topics && data.topics.some(t => t.toLowerCase() === normalized));
   });
 
   posts.sort((a, b) => new Date(b.data.pub_date).getTime() - new Date(a.data.pub_date).getTime());
@@ -168,8 +167,7 @@ export async function getPostsByAuthor({
     if (exclude_hidden && data.hide_from_collections) return false;
 
     const normalizedAuthor = author ? author.toLowerCase() : null;
-
-    return !normalizedAuthor || (data.authors && data.authors.some(postAuthor => postAuthor.toLowerCase() === normalizedAuthor));
+    return !normalizedAuthor || (data.authors && data.authors.some(a => a.toLowerCase() === normalizedAuthor));
   });
 
   posts.sort((a, b) => new Date(b.data.pub_date).getTime() - new Date(a.data.pub_date).getTime());
