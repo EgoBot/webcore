@@ -31,7 +31,7 @@ const processedImage = resource.featuredImage
   : null;
 ---
 
-<article class="resource-card">
+<article class="resource-card" data-category={resource.category}>
   {resource.featured && (
     <div class="featured-badge">Featured</div>
   )}

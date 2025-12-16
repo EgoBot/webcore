@@ -1,27 +1,39 @@
 ---
 interface Props {
   categories: string[];
-  currentCategory?: string;
+  categoryCounts?: Record<string, number>;
+  totalCount?: number;
 }
 
-const { categories, currentCategory } = Astro.props;
+const { categories, categoryCounts = {}, totalCount = 0 } = Astro.props;
 ---
 
 <div class="category-filter">
-  <a
-    href="/resources"
-    class:list={["filter-chip", { active: !currentCategory }]}
-  >
-    All Resources
-  </a>
+  <div class="filter-chip">
+    <input
+      id="all-resources"
+      type="radio"
+      name="resource-category"
+      data-category="all"
+      checked
+    />
+    <label for="all-resources">
+      All Resources ({totalCount})
+    </label>
+  </div>
 
   {categories.map(category => (
-    <a
-      href={`/resources?category=${encodeURIComponent(category)}`}
-      class:list={["filter-chip", { active: currentCategory === category }]}
-    >
-      {category}
-    </a>
+    <div class="filter-chip">
+      <input
+        id={`category-${category.toLowerCase().replace(/\s+/g, '-')}`}
+        type="radio"
+        name="resource-category"
+        data-category={category}
+      />
+      <label for={`category-${category.toLowerCase().replace(/\s+/g, '-')}`}>
+        {category} ({categoryCounts[category] || 0})
+      </label>
+    </div>
   ))}
 </div>
 
@@ -34,6 +46,18 @@ const { categories, currentCategory } = Astro.props;
   }
 
   .filter-chip {
+    position: relative;
+  }
+
+  .filter-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .filter-chip label {
+    display: block;
     padding: 0.5rem 1rem;
     border-radius: max(100px, calc(6.94vw * var(--scale, 1)));
     border: 2px solid var(--color-border, #e5e7eb);
@@ -45,16 +69,17 @@ const { categories, currentCategory } = Astro.props;
     text-transform: uppercase;
     font-size: 0.875rem;
     letter-spacing: 0.025em;
+    cursor: pointer;
   }
 
-  .filter-chip:hover {
+  .filter-chip label:hover {
     border-color: var(--color-primary, #000000);
     background: var(--color-primary, #000000);
     color: white;
     transition: background 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out;
   }
 
-  .filter-chip.active {
+  .filter-chip input:checked + label {
     background: var(--color-primary, #000000);
     color: white;
     border-color: var(--color-primary, #000000);
