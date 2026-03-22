@@ -52,8 +52,8 @@ const backgroundColorValue = globalSettings.background_color
   .replace(")", "");
 
 
-const primaryFont = globalSettings.primary_font.replace('+', ' ');
-const secondaryFont = globalSettings.secondary_font.replace('+', ' ');
+const primaryFont = globalSettings.primary_font.replaceAll('+', ' ');
+const secondaryFont = globalSettings.secondary_font.replaceAll('+', ' ');
 
 const cssVars = `
   :root {
