@@ -6,6 +6,7 @@ import BackgroundMediaPostHeader from "../components/BackgroundMediaPostHeader.a
 import DefaultPostHeader from "../components/DefaultPostHeader.astro";
 import FooterCreative from "../components/FooterCreative.astro";
 import FooterNormal from "../components/FooterNormal.astro";
+import FooterMinimal from "../components/FooterMinimal.astro";
 
 import "@styles/post.css";
 import "@styles/post-content.css";
@@ -17,6 +18,12 @@ const t = await import(/* @vite-ignore */ `@locales/${globalSettings.language}.j
 const page  = Astro.props.page as CollectionEntry<"page">;
 
 const { title, excerpt, feature_image, feature_video, page_header_type, page_template: page_template_data } = page.data;
+
+// Page type: "Standard" (editorial) or "Content" (body-copy-forward, e.g. legal pages)
+const page_type = (page.data as any).page_type ?? "Standard";
+
+// Footer: per-page override or global default
+const footer_type = (page.data as any).footer_type ?? globalSettings.footer_type;
 
 const post_header_type_global = globalSettings.post_header_type;
 const post_header = page_header_type ?? post_header_type_global;
@@ -38,9 +45,10 @@ const feature_media = feature_image || feature_video;
           : "true"
     }
   >
-    <article class="article" data-is-post="false" data-post-header-type={post_header} data-has-featured-image={feature_image ? "true" : "false"} 
-      data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true">        
-        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ? 
+    <article class="article" data-is-post="false" data-post-header-type={post_header} data-has-featured-image={feature_image ? "true" : "false"}
+      data-right-aligned-template={post_template == "Right Aligned" ? "true" : "false"}  data-has-video={feature_video ? "true" : "false"} data-has-header="true"
+      data-page-type={page_type}>
+        {(post_header == "Background Media" || post_header == "Background Media Centered") && feature_media ?
           (
             <BackgroundMediaPostHeader globalSettings={globalSettings} t={t} post={page} content_position={post_header === "Background Media Centered" ? "Center" : "Bottom Left"} is_for_end_page={true}/>
           ) : (
@@ -63,8 +71,10 @@ const feature_media = feature_image || feature_video;
     </article>
   </main>
 
-  {globalSettings.footer_type == "Creative" ? (
+  {footer_type === "Creative" ? (
     <FooterCreative t={t} globalSettings={globalSettings}/>
+  ) : footer_type === "Minimal" ? (
+    <FooterMinimal t={t} globalSettings={globalSettings}/>
   ) : (
     <FooterNormal t={t} globalSettings={globalSettings}/>
   )}
@@ -91,4 +101,3 @@ const feature_media = feature_image || feature_video;
     setLightense();
   </script>
 )}
-

@@ -1,0 +1,46 @@
+---
+import Social from "./Social.astro";
+import Logo from "./Logo.astro";
+import FooterLink from "./FooterLink.astro";
+import socialsSettings from "@config/socials.json.ts";
+import footerSettings from "@config/footer.json";
+
+import "@styles/footer-minimal.css";
+
+const { t, globalSettings } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="footer-wrapper-minimal" id="minimal-footer">
+    <div class="footer-minimal wide-container">
+        <div class="footer-minimal-main">
+            <div class="footer-minimal-socials">
+                {
+                    socialsSettings.map((social) =>
+                        <Social social={social} />
+                    )
+                }
+            </div>
+            <div class="footer-minimal-logo">
+                <Logo globalSettings={globalSettings} navbar_logo={false}/>
+            </div>
+        </div>
+
+        <div class="footer-minimal-bottom">
+            <p class="footer-minimal-copyright paragraph light">
+                &copy;&nbsp;{currentYear}&nbsp;<a class="hover-underline" href="/">{globalSettings.site_name}</a>.&nbsp;{t.global.footer.credits}
+            </p>
+            <nav class="footer-minimal-links">
+                {
+                    footerSettings.map((footerLink) =>
+                        !("dropdown" in footerLink) && (
+                            <a class="footer-minimal-link" href={footerLink.link} target={footerLink.new_tab ? "_blank" : ""} rel={footerLink.new_tab ? "noopener noreferrer" : ""}>
+                                {footerLink.text}
+                            </a>
+                        )
+                    )
+                }
+            </nav>
+        </div>
+    </div>
+</footer>

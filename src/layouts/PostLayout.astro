@@ -9,6 +9,7 @@ import Social from "../components/Social.astro";
 import SmallArrowIcon from "../assets/icons/SmallArrowIcon.astro";
 import FooterCreative from "../components/FooterCreative.astro";
 import FooterNormal from "../components/FooterNormal.astro";
+import FooterMinimal from "../components/FooterMinimal.astro";
 
 import "@styles/post.css";
 import "@styles/post-content.css";
@@ -161,8 +162,10 @@ if(post.data.topics && post.data.topics.length > 0){
     </article>
   </main>
 
-  {globalSettings.footer_type == "Creative" ? (
+  {globalSettings.footer_type === "Creative" ? (
     <FooterCreative t={t} globalSettings={globalSettings}/>
+  ) : globalSettings.footer_type === "Minimal" ? (
+    <FooterMinimal t={t} globalSettings={globalSettings}/>
   ) : (
     <FooterNormal t={t} globalSettings={globalSettings}/>
   )}

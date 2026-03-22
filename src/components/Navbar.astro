@@ -7,9 +7,13 @@ import NavbarDropdown from "./NavbarDropdown.astro";
 import "@styles/navbar.css";
 
 const { globalSettings, t } = Astro.props;
+
+const showSubscribe = globalSettings.show_subscribe_cta !== false;
+const navbarPosition = globalSettings.navbar_position ?? "absolute";
+const navbarScrollEffect = globalSettings.navbar_scroll_effect ?? false;
 ---
 
-<custom-header class:list={['navbar-outer', { 'opacity-animation': globalSettings.use_page_load_animations }]}>
+<custom-header class:list={['navbar-outer', { 'opacity-animation': globalSettings.use_page_load_animations, 'navbar-fixed': navbarPosition === 'fixed' }]} data-scroll-effect={navbarScrollEffect ? "true" : "false"}>
     <div class="navbar">
       <div class="wide-container">
         <div class="navbar-inner">
@@ -35,13 +39,15 @@ const { globalSettings, t } = Astro.props;
                     }
               </ul>
 
-              <ul class="cta-navbar-links">
-                <li>
-                    <a href="/subscribe/" class="nav-link medium-text smaller last">
-                        {t.global.navbar.subscribe}                           
-                    </a>
-                </li>
-              </ul>
+              {showSubscribe && (
+                <ul class="cta-navbar-links">
+                  <li>
+                      <a href="/subscribe/" class="nav-link medium-text smaller last">
+                          {t.global.navbar.subscribe}
+                      </a>
+                  </li>
+                </ul>
+              )}
             </div>
           </div>
         </div>
