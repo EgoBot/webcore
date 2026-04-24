@@ -1,0 +1,106 @@
+---
+/**
+ * FooterRetold — Retold-family footer.
+ *
+ * Dark, gold-accented, two-row: tagline + links on top, copyright + brand
+ * line on bottom. Pass props directly — no config file dependency, unlike
+ * the coaching-site footers.
+ */
+
+interface FooterLink {
+  label: string;
+  href: string;
+  /** Open in new tab (default false). */
+  external?: boolean;
+}
+
+interface Props {
+  /** Short prose paragraph on the left of the top row. */
+  tagline?: string;
+  /** Copyright line — bottom-left. Renders raw text (use © directly). */
+  copyright: string;
+  /** Footer nav links — top-right. */
+  links: FooterLink[];
+  /** Optional bottom-right text. Defaults to the host domain. */
+  brandLine?: string;
+}
+
+const { tagline, copyright, links, brandLine } = Astro.props as Props;
+const fallbackBrand = Astro.site?.host ?? "odysseyretold.com";
+---
+<footer class="retold-footer">
+  <div class="retold-footer-inner">
+    {tagline && <p class="retold-footer-tagline">{tagline}</p>}
+    <nav class="retold-footer-links" aria-label="Footer">
+      {links.map(({ label, href, external }) => (
+        <a
+          href={href}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
+        >{label}</a>
+      ))}
+    </nav>
+  </div>
+  <div class="retold-footer-bottom">
+    <span>{copyright}</span>
+    <span>{brandLine ?? fallbackBrand}</span>
+  </div>
+</footer>
+
+<style>
+  .retold-footer {
+    background: #16161a;
+    border-top: 1px solid var(--hairline-faint);
+    padding: 72px 48px 48px;
+    color: var(--grey);
+  }
+  .retold-footer-inner {
+    max-width: var(--content-wide);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .retold-footer-tagline {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--body-light);
+    opacity: 0.75;
+    max-width: 520px;
+  }
+  .retold-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: flex-end;
+  }
+  .retold-footer-links a {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey);
+    transition: color 0.3s;
+  }
+  .retold-footer-links a:hover { color: var(--gold); }
+  .retold-footer-bottom {
+    max-width: var(--content-wide);
+    margin: 48px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline-faint);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  @media (max-width: 860px) {
+    .retold-footer { padding: 56px 24px 36px; }
+    .retold-footer-inner { grid-template-columns: 1fr; gap: 32px; }
+    .retold-footer-links { justify-content: flex-start; }
+  }
+</style>
