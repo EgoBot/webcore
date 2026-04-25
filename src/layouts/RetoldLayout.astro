@@ -1,0 +1,102 @@
+---
+/**
+ * RetoldLayout — base layout for the Retold family of products.
+ *
+ * Dark-only, type-restrained, image-led. Provides the design-token CSS,
+ * Google Fonts preconnect, SEO/OG meta via astro-seo, a default wordmark
+ * nav (overridable via the `nav` slot), and a required `footer` slot.
+ *
+ * This is intentionally narrower than BaseLayout — Retold doesn't need
+ * the multi-theme, multi-footer, scrolling-effect, content-card scaffolding
+ * that the coaching/blog sites do.
+ */
+import "../styles/retold-tokens.css";
+import { SEO } from "astro-seo";
+
+interface Props {
+  /** Tab title and OG title. */
+  title?: string;
+  /** Meta description and OG description. */
+  description?: string;
+  /** OG/Twitter image (absolute path or absolute URL). */
+  image?: string;
+  /** Wordmark text (top-left of default nav). */
+  wordmark: string;
+  /** Sub-line under the wordmark. */
+  wordmarkSub?: string;
+  /** Override the wordmark click target. Defaults to "/". */
+  wordmarkHref?: string;
+  /** Browser theme color. */
+  themeColor?: string;
+  /** Block search indexing. */
+  noindex?: boolean;
+  /** Optional canonical override (rare; defaults to Astro.url). */
+  canonical?: string;
+}
+
+const {
+  title = "The Odyssey Retold — Homer's Odyssey, retold in 88 days.",
+  description = "Two minutes each morning. The oldest survival story in Western literature, rewritten for people who'd like to read it but know they never will.",
+  image = "/assets/hero-ithaca.jpg",
+  wordmark,
+  wordmarkSub,
+  wordmarkHref = "/",
+  themeColor = "#1E1E22",
+  noindex = false,
+  canonical,
+} = Astro.props as Props;
+
+const site = Astro.site ?? new URL("https://odysseyretold.com");
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, site).toString();
+const imageUrl = image.startsWith("http") ? image : new URL(image, site).toString();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={themeColor} />
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/assets/logo-square.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonicalUrl}
+      noindex={noindex}
+      nofollow={noindex}
+      openGraph={{
+        basic: { title, type: "website", image: imageUrl, url: canonicalUrl },
+        optional: { description, siteName: "The Odyssey Retold" },
+        image: { alt: title },
+      }}
+      twitter={{ card: "summary_large_image", title, description, image: imageUrl }}
+    />
+
+    <slot name="head-extra" />
+  </head>
+  <body>
+    <a class="retold-skip" href="#main">Skip to content</a>
+
+    <slot name="nav">
+      <nav class="retold-nav" aria-label="Primary">
+        <a href={wordmarkHref} class="retold-wordmark" aria-label={wordmark}>
+          {wordmark}
+          {wordmarkSub && <span class="sub">{wordmarkSub}</span>}
+        </a>
+      </nav>
+    </slot>
+
+    <slot />
+
+    <slot name="footer" />
+  </body>
+</html>
