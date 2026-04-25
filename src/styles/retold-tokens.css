@@ -118,7 +118,7 @@ button, input, select, textarea { font-family: inherit; }
   display: block;
   font-size: 9px;
   letter-spacing: 0.25em;
-  color: var(--grey);
+  color: var(--text-secondary);
   margin-top: 3px;
 }
 
